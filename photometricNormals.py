@@ -366,11 +366,11 @@ def createMeshLabXML(name, objectName, ntype):
         E.MeshGroup(
             E.MLMesh(
                 E.MLMatrix44("""
-1 0 0 0 
-0 1 0 0 
-0 0 1 0 
-0 0 0 1 
-"""),
+                            1 0 0 0 
+                            0 1 0 0 
+                            0 0 1 0 
+                            0 0 0 1 
+                            """),
                 label="{}.obj".format(objectName), filename="{}.obj".format(objectName)
             )
         ),
@@ -439,6 +439,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--maps', action="store_true", default=False)
+    # diffuse and spec maps
     parser.add_argument('--diffuseProj', action="store_true", default=False)
     parser.add_argument('--specularProj', action="store_true", default=False)
 

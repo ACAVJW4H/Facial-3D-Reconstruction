@@ -6,6 +6,7 @@ def displaceGeomtry(pathToOBJ, pathForExport):
     for object_ in scene.objects:
         bpy.data.objects.remove(object_, True)
 
+    # Open blender environment and delete template
     imported_object = bpy.ops.import_scene.obj(filepath=pathToOBJ)
     obj_object = bpy.context.selected_objects[0]
     bpy.context.scene.objects.active = obj_object
@@ -15,6 +16,7 @@ def displaceGeomtry(pathToOBJ, pathForExport):
         item.use_shadeless = True
 
     subd = obj_object.modifiers.new("subd", type='SUBSURF')
+    # subdivision 500k -> 3m vertices
     # # subd.levels = 2
     bpy.ops.object.modifier_apply(modifier=subd.name)
 
