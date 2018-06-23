@@ -13,7 +13,7 @@ def createAndSaveModel():
     photos = []
 
     for i in range(1, 11):
-        photos.append(path + "card{}.JPG".format(i))
+        photos.append(path + "card{}.CR2".format(i))
 
     chunk.addPhotos(photos)
 
