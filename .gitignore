@@ -1,10 +1,6 @@
 /*
 !requirments.txt
-!createUV.py
-!photometricNormals.py
-!createModel.py
-!blender.py
-!blur.py
+!*.py
 !*.mlx
 !*.sh
 !*.bat
