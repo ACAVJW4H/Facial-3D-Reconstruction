@@ -1,6 +1,7 @@
 import argparse
 import time
 import xml.etree.ElementTree as ET
+import os
 
 import cv2 as cv
 
@@ -80,18 +81,16 @@ def calculateDiffuseNormals(card):
 
     images = []
 
-    prefix = "./card{}/".format(card)
+    prefix = "../testdata/card{}/".format(card)
+    nameslast  = [str(i)+".TIFF" for i in [3, 5, 7, 9, 13, 15]]
 
-    names = [prefix + str(name) + ".TIF" for name in range(3, 16, 2)]
-    names.remove(prefix + "11.TIF")
-
-    # print(names)
+    names  = [os.path.join(prefix, name) for name in nameslast]
 
     for i in names:
         img = Image.open(i)
         arr = array(img)
         images.append(arr.astype('float64'))
-
+    
     height, width, _ = images[0].shape
 
     N_x = (images[0] - images[1]) / 255
@@ -126,7 +125,7 @@ def rotationMatrix(path):
 
     return rotationMatrix
 
-def calculateSpecularNormals(card):
+def calculateSpecularNormals(card): # card is just range(1, 10)
 
     viewVectors = getTranslationVectorPerCamera('blocksExchange.xml')
     viewVectors = valmap(lambda arr: arr[:3], viewVectors)
@@ -143,11 +142,11 @@ def calculateSpecularNormals(card):
 
     images = []
 
-    prefix = "./card{}/".format(card)
+    prefix = "../testdata/card{}/".format(card)
 
-    xGradients = [prefix + str(name) + ".TIF" for name in range(3, 7)]
-    yGradients = [prefix + str(name) + ".TIF" for name in range(7, 11)]
-    zGradients = [prefix + str(name) + ".TIF" for name in range(13, 17)]
+    xGradients = [prefix + str(name) + ".TIFF" for name in range(3, 7)]
+    yGradients = [prefix + str(name) + ".TIFF" for name in range(7, 11)]
+    zGradients = [prefix + str(name) + ".TIFF" for name in range(13, 17)]
 
     names = xGradients + yGradients + zGradients
 
@@ -199,10 +198,11 @@ def calculateSpecularNormals(card):
 
     im = Image.fromarray(encodedImage.astype('uint8'))
     im.save("specularNormal{}.png".format(card), "PNG")
+    print("specular printed")
 
 def specularHack():
 
-    for card in range(1, 11):
+    for card in range(1, 10):
         diffuse = Image.open("diffuseNormals/diffuseNormal{}.png".format(card))
         specular = Image.open("specularNormals/specularNormal{}.png".format(card))
         blurredSpecular = specular.filter(PIL.ImageFilter.GaussianBlur(radius=10))
@@ -446,11 +446,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.maps:
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            executor.map(calculateDiffuseNormals, range(1, 11))
-
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            executor.map(calculateSpecularNormals, range(1, 11))
+        for i in range (1, 10):
+            calculateDiffuseNormals(i)
+            calculateSpecularNormals(i)
 
     if args.diffuseProj:
         createMeshLabXML("diffuseProject", "agisoftExport", "diffuse")
