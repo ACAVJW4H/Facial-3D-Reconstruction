@@ -13,7 +13,9 @@ def createAndSaveModel():
     photos = []
 
     for i in range(1, 11):
-        photos.append(path + "card{}.CR2".format(i))
+        photos.append(path + "card{}.JPG".format(i))
+
+    print(photos)
 
     chunk.addPhotos(photos)
 
@@ -26,7 +28,6 @@ def createAndSaveModel():
     for camera in doc.chunk.cameras:
         if not camera.transform:
             doc.chunk.alignCameras([camera])
-
 
     chunk.optimizeCameras(adaptive_fitting=True)
 
@@ -43,6 +44,7 @@ def createAndSaveModel():
     chunk.exportCameras("{}bundler.out".format(path), PhotoScan.CamerasFormat.CamerasFormatBundler)
     chunk.exportCameras("{}agisoftXML.xml".format(path), PhotoScan.CamerasFormat.CamerasFormatXML)
     chunk.exportCameras("{}blocksExchange.xml".format(path), PhotoScan.CamerasFormat.CamerasFormatBlocksExchange)
+    # The actual model
     chunk.exportModel("{}agisoftExport.obj".format(path), format=PhotoScan.ModelFormat.ModelFormatOBJ)
 
     # doc.save(path=path+filename, chunks= [doc.chunk])
