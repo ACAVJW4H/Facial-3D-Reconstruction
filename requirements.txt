@@ -14,7 +14,6 @@ decorator==4.1.2
 dill==0.2.7.1
 entrypoints==0.2.3
 enum34==1.1.6
-functools32==3.2.3.post2
 future==0.16.0
 futures==3.2.0
 gitdb2==2.0.3
