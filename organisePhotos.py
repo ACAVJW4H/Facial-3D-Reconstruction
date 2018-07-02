@@ -5,8 +5,15 @@ from shutil import copyfile
 import rawpy
 import imageio
 
+# Set number of cameras
+CAM_NUM = 10
+
+if CAM_NUM not in [9, 10]:
+    print("Only 9 and 10 cameras supported.")
+    exit()
+
 PHOTOS = "../testdata"
-CARDS = ["card{}".format(i) for i in range(1, 11)]
+CARDS = ["card{}".format(i) for i in range(1, CAM_NUM+1)]
 NAMES  = ["{}.CR2".format(i) for i in range(1, 17)]
 
 for card in CARDS:
@@ -17,9 +24,16 @@ for card in CARDS:
         # os.rename(os.path.join(cardpath, photos[i]),
         #        os.path.join(cardpath, NAMES[i]))
     
-        # move 15th capture to main folder for Photoscan
-        if (i == 11):
-            copyfile(os.path.join(cardpath, "11.tif"),
-                     "{}.tif".format(card))
+        # 11th for the 10 camera setting
+        # 15th for the 9  camera setting
+        if CAM_NUM==9:
+            if (i == 15):
+                copyfile(os.path.join(cardpath, "15.tif"),
+                        "{}.tif".format(card))
+        else:
+            if (i == 11):
+                copyfile(os.path.join(cardpath, "15.tif"),
+                        "{}.tif".format(card))
+
     
     print("Card {} done.".format(card))
