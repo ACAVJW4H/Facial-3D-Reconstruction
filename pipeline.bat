@@ -25,7 +25,7 @@ REM Compose Meshlab diffuse project,
 REM execute the blenderScript to create the texture map from the diffuse normals and
 REM connect their coordinates with the model.
 python photometricNormals.py --diffuseProj
-%Meshlab% -p diffuseProject.mlp -i agisoftExport.obj -s blenderScript.mlx -w forBlender.mlp
+%Meshlab% -p diffuseProject.mlp -i agisoftExport.obj -s blenderScript.mlx -w diffuseAdded.mlp
 ECHO MESHLAB DIFFUSE PROJECT EXECUTED
 REM Compose Meshlab specular project,
 REM execute the blenderScript to create the texture map from the specular normals and
