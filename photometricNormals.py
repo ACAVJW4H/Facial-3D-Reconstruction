@@ -82,9 +82,9 @@ def calculateDiffuseNormals(card):
     images = []
 
     prefix = "../testdata/card{}/".format(card)
-    nameslast  = [str(i)+".TIFF" for i in [3, 5, 7, 9, 13, 15]]
-
-    names  = [os.path.join(prefix, name) for name in nameslast]
+    #names = [prefix + str(name) + ".TIF" for name in range(3, 15, 2)]
+    names = [prefix + str(name) + ".TIF" for name in range(3, 16, 2)]
+    names.remove(prefix + "11.TIF")
 
     for i in names:
         img = Image.open(i)
@@ -113,11 +113,41 @@ def calculateDiffuseNormals(card):
     im = Image.fromarray(encodedImage.astype('uint8'))
     im.save("diffuseNormal{}.png".format(card))
 
+# def get_rotation_matrix(i_v, unit=None):
+#     # From http://www.j3d.org/matrix_faq/matrfaq_latest.html#Q38
+#     if unit is None:
+#         unit = [1.0, 0.0, 0.0]
+#     # Normalize vector length
+#     i_v /= np.linalg.norm(i_v)
+
+#     # Get axis
+#     uvw = np.cross(i_v, unit)
+
+#     # compute trig values - no need to go through arccos and back
+#     rcos = np.dot(i_v, unit)
+#     rsin = np.linalg.norm(uvw)
+
+#     #normalize and unpack axis
+#     if not np.isclose(rsin, 0):
+#         uvw /= rsin
+#     u, v, w = uvw
+
+#     # Compute rotation matrix - re-expressed to show structure
+#     return (
+#         rcos * np.eye(3) +
+#         rsin * np.array([
+#             [ 0, -w,  v],
+#             [ w,  0, -u],
+#             [-v,  u,  0]
+#         ]) +
+#         (1.0 - rcos) * uvw[:,None] * uvw[None,:]
+#     )
+
 def rotationMatrix(path):
     viewVectors = getTranslationVectorPerCamera(path)
     viewVectors = valmap(lambda arr: arr[:3], viewVectors)
     camera3 = viewVectors['card3JPG']
-    camera5 = viewVectors['card5JPG']
+    camera5 = viewVectors['cardJPG']
     angle = angleBetween(np.array(camera3), np.array(camera5))
     rotationMatrix = createYRotationMatric(np.deg2rad(180))
 
@@ -129,10 +159,20 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
 
     viewVectors = getTranslationVectorPerCamera('blocksExchange.xml')
     viewVectors = valmap(lambda arr: arr[:3], viewVectors)
+    print("ViewVectors:", viewVectors)
     camera3 = viewVectors['card3']
     camera5 = viewVectors['card5']
     angle = angleBetween(np.array(camera3), np.array(camera5))
     rotationMatrix = createYRotationMatric(-angle)
+
+    # viewVectors = getTranslationVectorPerCamera('blocksExchange.xml')
+    # viewVectors = valmap(lambda arr: arr[:3], viewVectors)
+    # # print(viewVectors)
+    # camera3 = viewVectors['card4']
+    # # camera5 = viewVectors['card2']
+    # angle = angleBetween(np.array(camera3), np.array([0.0, 0.0, -1.0]))
+    # print(np.rad2deg(angle))
+    # rotationMatrix = createYRotationMatric(-angle)
 
     correctedViewVector = np.dot(rotationMatrix, viewVectors['card{}'.format(card)])
     correctedViewVector = correctedViewVector.tolist()
@@ -144,9 +184,10 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
 
     prefix = "../testdata/card{}/".format(card)
 
-    xGradients = [prefix + str(name) + ".TIFF" for name in range(3, 7)]
-    yGradients = [prefix + str(name) + ".TIFF" for name in range(7, 11)]
-    zGradients = [prefix + str(name) + ".TIFF" for name in range(13, 17)]
+    xGradients = [prefix + str(name) + ".TIF" for name in range(3, 7)]
+    yGradients = [prefix + str(name) + ".TIF" for name in range(7, 11)]
+    # zGradients = [prefix + str(name) + ".TIF" for name in range(11, 15)]
+    zGradients = [prefix + str(name) + ".TIF" for name in range(11, 17)]
 
     names = xGradients + yGradients + zGradients
 
@@ -198,11 +239,10 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
 
     im = Image.fromarray(encodedImage.astype('uint8'))
     im.save("specularNormal{}.png".format(card), "PNG")
-    print("specular printed")
 
 def specularHack():
 
-    for card in range(1, 10):
+    for card in range(1, 11):
         diffuse = Image.open("diffuseNormals/diffuseNormal{}.png".format(card))
         specular = Image.open("specularNormals/specularNormal{}.png".format(card))
         blurredSpecular = specular.filter(PIL.ImageFilter.GaussianBlur(radius=10))
@@ -401,7 +441,6 @@ def createVCGTags(ntype):
     for card in cards:
         number = int(card.replace("card", ""))
         rotationMatrix = rotationMatricies[card].replace('\n', " ")
-
         translationVector = translationVectors[card]
         translationVector = map(lambda x: x*-1, translationVector)
         translationVector[-1] *= -1
@@ -446,7 +485,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.maps:
-        for i in range (1, 10):
+        for i in range (1, 11):
             calculateDiffuseNormals(i)
             calculateSpecularNormals(i)
 
@@ -454,6 +493,6 @@ if __name__ == "__main__":
         createMeshLabXML("diffuseProject", "agisoftExport", "diffuse")
 
     if args.specularProj:
-        createMeshLabXML("specularProject", "diffuseEmbossed", "specular")
+        createMeshLabXML("specularProject", "agisoftExport_out", "specular")
 
     print("--- %s seconds ---" % (time.time() - start_time))
