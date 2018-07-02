@@ -1,5 +1,5 @@
 # High Resolution Facial Capture using a Light Stage
-Forked from [mk29142](https://github.com/mk29142) and adapted for Windows 10.
+Forked from [mk29142](https://github.com/mk29142), properly automated and adapted for Windows 10.
 
 ## Installation
 The environment is tested a Windows 10 operating system.
