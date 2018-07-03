@@ -27,5 +27,5 @@ def displaceGeomtry(pathToOBJ, pathForExport):
     bpy.ops.export_scene.obj(filepath=pathForExport)
 
 if __name__ == "__main__":
-    displaceGeomtry("agisoftExport_out_out.obj",
-    "fromBlender.obj")
+    displaceGeomtry("../data/agisoftExport_out_out.obj",
+    "../final.obj")
