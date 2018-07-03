@@ -11,7 +11,7 @@ if CAM_NUM not in [9, 10]:
 PhotoScan.gpu_mask = 1  #GPU devices binary mask
 PhotoScan.cpu_enable = True
 
-path = os.path.dirname(os.path.abspath(__file__)) + "/"
+path = os.path.dirname(os.path.abspath(__file__)) + "/../data/"
 
 def createAndSaveModel():
     doc = PhotoScan.app.document

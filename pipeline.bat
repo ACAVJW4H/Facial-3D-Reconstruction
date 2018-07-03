@@ -19,19 +19,20 @@ REM %Photoscan% -r createModel.py
 REM ECHO 3D MODEL RECONSTRUCTED
 REM Compute diffuse and specular Normal Maps
 REM Photos should be in ..\data\card{}\1-16.TIF
-python photometricNormals.py --maps
+REM python photometricNormals.py --maps
 ECHO DIFFUSE AND SPECULAR MAPS COMPUTED
 REM Compose Meshlab diffuse project,
 REM execute the blenderScript to create the texture map from the diffuse normals and
 REM connect their coordinates with the model.
 python photometricNormals.py --diffuseProj
-%Meshlab% -p diffuseProject.mlp -i agisoftExport.obj -s blenderScript.mlx -w diffuseAdded.mlp
+%Meshlab% -p ..\data\diffuseProject.mlp -i ..\data\agisoftExport.obj -s blenderScript.mlx -w ..\data\diffuseAdded.mlp
 ECHO MESHLAB DIFFUSE PROJECT EXECUTED
 REM Compose Meshlab specular project,
 REM execute the blenderScript to create the texture map from the specular normals and
 REM connect their coordinates with the model.
 python photometricNormals.py --specularProj
-%Meshlab% -p specularProject.mlp -i agisoftExport_out.obj -s blenderScript.mlx -w specularAdded.mlp
+%Meshlab% -p ..\data\specularProject.mlp -i ..\data\agisoftExport_out.obj -s blenderScript.mlx -w ..\data\specularAdded.mlp
+MOVE blenderTexture.png ..\data\blenderTexture.png
 ECHO MESHLAB SPECULAR PROJECT EXECUTED
 REM Apply Gaussian blur of radius 1
 python blur.py
@@ -44,4 +45,5 @@ REM The result should overwrite the input file with the same name in same locati
 REM ---
 REM Execute the blender script to create detail on the model using the texture map.
 %blender% -b -P blender.py
+REM ---
 ECHO BLENDER SCRIPT EXECUTED.

@@ -117,7 +117,7 @@ def calculateDiffuseNormals(card):
     encodedImage *= 255.0
 
     im = Image.fromarray(encodedImage.astype('uint8'))
-    im.save("diffuseNormal{}.png".format(card))
+    im.save("../data/diffuseNormal{}.png".format(card))
 
 def get_rotation_matrix(i_v, unit=None):
     # From http://www.j3d.org/matrix_faq/matrfaq_latest.html#Q38
@@ -249,7 +249,7 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
     encodedImage = np.clip(encodedImage, 0, 255)
 
     im = Image.fromarray(encodedImage.astype('uint8'))
-    im.save("specularNormal{}.png".format(card), "PNG")
+    im.save("../data/specularNormal{}.png".format(card), "PNG")
 
 def specularHack():
 
@@ -421,7 +421,7 @@ def createMeshLabXML(name, objectName, ntype):
                             0 0 1 0 
                             0 0 0 1 
                             """),
-                label="{}.obj".format(objectName), filename="{}.obj".format(objectName)
+                label="../data/{}.obj".format(objectName), filename="../data/{}.obj".format(objectName)
             )
         ),
         E.RasterGroup(
@@ -431,15 +431,15 @@ def createMeshLabXML(name, objectName, ntype):
 
     tree = etree.ElementTree(project)
 
-    with open("{}.mlp".format(name), "wb") as f:
+    with open("../data/{}.mlp".format(name), "wb") as f:
         f.write("<!DOCTYPE MeshLabDocument>\n")
         tree.write(f, pretty_print=True)
 
 def createVCGTags(ntype):
-    translationVectors = getTranslationVectorPerCamera('blocksExchange.xml')
-    rotationMatricies = getRotationMatrixPerCamera('bundler.out', 'blocksExchange.xml')
-    cameraParams = getCameraParameters('blocksExchange.xml', 'agisoftXML.xml')
-    focalLengths = getFocalFromAgisoftXml('agisoftXML.xml')
+    translationVectors = getTranslationVectorPerCamera('../data/blocksExchange.xml')
+    rotationMatricies = getRotationMatrixPerCamera('../data/bundler.out', '../data/blocksExchange.xml')
+    cameraParams = getCameraParameters('../data/blocksExchange.xml', '../data/agisoftXML.xml')
+    focalLengths = getFocalFromAgisoftXml('../data/agisoftXML.xml')
 
     cards = sorted(map(lambda x: int(x.replace('card', '')), rotationMatricies.keys()))
     cards = map(lambda x: "card{}".format(x), cards)
@@ -460,7 +460,7 @@ def createVCGTags(ntype):
         focalLength = focalLengths[card]
         paramKeys = cameraParam.keys()
 
-        file_name = "{}Normal{}".format(ntype, number)
+        file_name = "../data/{}Normal{}".format(ntype, number)
 
         tag = E.MLRaster(
              etree.Element('VCGCamera',
