@@ -4,6 +4,7 @@ import os
 from shutil import copyfile
 import rawpy
 import imageio
+from PIL import Image
 
 # Set number of cameras
 CAM_NUM = 10
@@ -28,16 +29,16 @@ for card in CARDS:
             rgb = raw.postprocess(gamma=(1,1), no_auto_bright=True)
         imageio.imsave(cardpath{}.format(i)+'.TIF', rgb)
 
-        # 11th for the 10 camera setting
-        # 15th for the 9  camera setting
         if CAM_NUM==9:
+            # 15th for the 9  camera setting
             if (i == 15):
-                copyfile(os.path.join(cardpath, "15.tif"),
-                        "{}.TIF".format(card))
+                im = Image.open(cardpath+"15.TIF")
+                im.save("../data/15.JPG")
         else:
+            # 11th for the 10 camera setting
             if (i == 11):
-                copyfile(os.path.join(cardpath, "15.tif"),
-                        "{}.TIF".format(card))
+                im = Image.open(cardpath+"11.TIF")
+                im.save("../data/11.JPG")
 
     
     print("Card {} done.".format(card))
