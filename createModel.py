@@ -2,7 +2,7 @@ import PhotoScan
 import os
 
 # Set number of cameras
-CAM_NUM = 10
+CAM_NUM = 9
 
 if CAM_NUM not in [9, 10]:
     print("Only 9 and 10 cameras supported.")
@@ -20,7 +20,7 @@ def createAndSaveModel():
     photos = []
 
     for i in range(1, CAM_NUM+1):
-        photos.append(path + "card{}.JPG".format(i))
+        photos.append(path + "card{}.tif".format(i))
 
     print(photos)
 
