@@ -17,7 +17,7 @@ from toolz.dicttoolz import valmap
 import cv2 as cv
 
 # Set number of cameras
-CAM_NUM = 10
+CAM_NUM = 9
 
 if CAM_NUM not in [9, 10]:
     print("Only 9 and 10 cameras supported.")
@@ -169,13 +169,11 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
         viewVectors = valmap(lambda arr: arr[:3], viewVectors)
         camera3 = viewVectors['card4']
         angle = angleBetween(np.array(camera3), np.array([0.0, 0.0, -1.0]))
-        print(np.rad2deg(angle))
         rotationMatrix = createYRotationMatric(-angle)
     else:
         # for 10 camera setting
         viewVectors = getTranslationVectorPerCamera('blocksExchange.xml')
         viewVectors = valmap(lambda arr: arr[:3], viewVectors)
-        print("ViewVectors:", viewVectors)
         camera3 = viewVectors['card3']
         camera5 = viewVectors['card5']
         angle = angleBetween(np.array(camera3), np.array(camera5))
@@ -410,7 +408,6 @@ def getCameraParameters(pathToBlockExchangeXML, pathToAgisoftXML):
 
 def createMeshLabXML(name, objectName, ntype):
     E = lxml.builder.ElementMaker()
-    print(ntype)
 
     project = E.MeshLabProject(
         E.MeshGroup(
