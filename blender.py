@@ -28,4 +28,4 @@ def displaceGeomtry(pathToOBJ, pathForExport):
 
 if __name__ == "__main__":
     displaceGeomtry("../data/agisoftExport_out_out.obj",
-    "../final.obj")
+    "../data/final.obj")
