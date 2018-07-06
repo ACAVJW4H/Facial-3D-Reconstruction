@@ -495,6 +495,7 @@ if __name__ == "__main__":
         for i in range (1, CAM_NUM+1):
             calculateDiffuseNormals(i)
             calculateSpecularNormals(i)
+            print("Specular+Diffuse for card {} done".format(i))
 
     if args.diffuseProj:
         createMeshLabXML("diffuseProject", "agisoftExport", "diffuse")
