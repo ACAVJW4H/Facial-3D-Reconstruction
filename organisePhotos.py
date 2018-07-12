@@ -20,7 +20,7 @@ else:
 
 PHOTOS = "../data"
 CARDS = ["card{}".format(i) for i in range(1, CAM_NUM+1)]
-NAMES  = ["{}.CR2".format(i) for i in range(1, 17)]
+NAMES  = ["{}.tif".format(i) for i in range(1, 17)]
 
 def new_name(dirPhotos, i):
     '''
@@ -31,27 +31,40 @@ def new_name(dirPhotos, i):
     base = int(dirPhotos[0].split(".")[0].split("_")[1])
     new  = int(dirPhotos[i].split(".")[0].split("_")[1])
     
-    return str(new-base+1)+".CR2"
+    return str(new-base+1)+".tif"
 
 for card in CARDS:
 
     cardpath = os.path.join(PHOTOS,card)
+
+    for image in os.listdir(cardpath):
+        if "CR2" in image:
+                os.remove(os.path.join(cardpath, image))
+    print("Raw {} deleted.".format(card))
+
     dirPhotos = os.listdir(cardpath)
     
-    # for i in range(1, 17):
-        # rename images to card{} folders
-    #     new_image = new_name(dirPhotos, i-1)
-    #     os.rename(os.path.join(cardpath, dirPhotos[i-1]),
-    #             os.path.join(cardpath, new_image))
+    # rename images to card{} folders
+    for i in range(1, 17):
+        new_image = new_name(dirPhotos, i-1)
+        os.rename(os.path.join(cardpath, dirPhotos[i-1]),
+                os.path.join(cardpath, new_image))
     
+    # Depracated, use photoshop image processor instead
     # os.system('ubuntu run ufraw-batch --out-type tiff --gamma=1.0 ../data/{}/*.CR2'.format(card))
 
     copyfile(os.path.join(cardpath, "{}.tif".format(stereoInput)),
             os.path.join(PHOTOS, str(card)+".tif"))
 
-    # remove raw
-    # for image in os.listdir(cardpath):
-    #     if "CR2" in image:
-    #         os.remove(os.path.join(cardpath, image))
-    
     print("Card {} done.".format(card))
+
+print("Press any key to delete raw. Press 'n' or Ctrl+C to cancel.")
+inp = raw_input("prompt")
+
+# remove raw
+if (inp == "n"): exit()
+for card in CARDS:
+    for image in os.listdir(cardpath):
+        if "CR2" in image:
+            os.remove(os.path.join(cardpath, image))
+    print("Raw {} deleted.".format(card))
