@@ -18,7 +18,7 @@ def print_card_info(i):
     and waits for a key to start transfering
     '''
 
-    print("Transfer: {}: Please insert next card and press any key.".format(i+1))
+    print("Transfer {}: Please insert next card and press any key.".format(i+1))
     print("If you wish to stop, type 's' or Ctrl+C")
     inp = raw_input()
 
