@@ -20,7 +20,6 @@ futures==3.2.0
 gitdb2==2.0.3
 GitPython==2.1.8
 html5lib==1.0b10
-imageio
 ipykernel==4.6.1
 ipython==5.5.0
 ipython-genutils==0.2.0
@@ -54,6 +53,7 @@ pexpect==4.2.1
 pickleshare==0.7.4
 Pillow==5.0.0
 progressbar2==3.34.3
+progress
 prompt-toolkit==1.0.15
 ptyprocess==0.5.2
 Pygments==2.2.0
@@ -64,6 +64,7 @@ python-rtmidi==1.1.0
 python-utils==2.2.0
 pytz==2017.2
 pyzmq==16.0.3
+pypiwin32
 qtconsole==4.3.1
 rawpy
 rope==0.10.7
