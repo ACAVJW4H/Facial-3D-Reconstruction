@@ -37,12 +37,11 @@ for card in CARDS:
 
     cardpath = os.path.join(PHOTOS,card)
 
-    for image in os.listdir(cardpath):
-        if "CR2" in image:
-                os.remove(os.path.join(cardpath, image))
-    print("Raw {} deleted.".format(card))
-
-    dirPhotos = os.listdir(cardpath)
+    dirPhotosAll = os.listdir(cardpath)
+    dirPhotos = []
+    for d in dirPhotosAll:
+        if ".tif" in d:
+            dirPhotos.append(d)
     
     # rename images to card{} folders
     for i in range(1, 17):
@@ -59,7 +58,7 @@ for card in CARDS:
     print("Card {} done.".format(card))
 
 print("Press any key to delete raw. Press 'n' or Ctrl+C to cancel.")
-inp = raw_input("prompt")
+inp = raw_input()
 
 # remove raw
 if (inp == "n"): exit()
