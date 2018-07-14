@@ -36,7 +36,7 @@ def get_card_name():
     Gets the loaded card name and number, 
     to be used in the folder structed of the inputs.
     '''
-    cardname = win32api.GetVolumeInformation("D:\\")[0]
+    cardname = win32api.GetVolumeInformation("E:\\")[0]
     return cardname.lower()
 
 def get_photo_names():
@@ -45,11 +45,11 @@ def get_photo_names():
     by date last modified.
     The last should be the most recent.
     '''
-    photo_folders = os.listdir("D:\\DCIM")
+    photo_folders = os.listdir("E:\\DCIM")
     photos = []
     for folder in photo_folders:
 
-        folder_path = os.path.join("D:\\DCIM", folder)
+        folder_path = os.path.join("E:\\DCIM", folder)
         photos_temp = os.listdir(folder_path)
 
         for photo in photos_temp:
