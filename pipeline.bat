@@ -4,12 +4,20 @@ REM alexandros.lattas17@imperial.ac.uk
 REM Project on github.com/lattas/facial-3d-reconstruction
 REM Reconstructs a 3D model of a face using pictures of different illumination and angle, as taken by a light stage.
 REM Based on Mridul Kumar's MEng thesis project
+REM ------------------Name----------------------
+REM Rename the folder in the arguments to 
+SET FolderName=%1
+ECHO Reconstructing %FolderName%...
+REN ..\%FolderName% data
+REM --------------Convert Photos----------------
+python organisePhotos.py
 REM ------------------Paths---------------------
 REM Set Paths to external Applications
 SET Photoscan="C:\Program Files\Agisoft\PhotoScan Pro\photoscan.exe"
 SET Meshlab="..\meshlab\meshlabserver.exe"
 SET Blender="C:\Program Files\Blender Foundation\Blender\blender.exe"
 SET ShaderMap4="C:\Program Files\ShaderMap 4\bin\ShaderMap.exe"
+SET SevenZip="C:\Program Files\7-Zip\7z.exe"
 REM Begin
 REM --------------Reconstruction----------------
 REM Reconstruct 3D Model with Photoscan Agisoft
@@ -58,3 +66,12 @@ REM as embedded by meshlab, to do a subdivision on it, to create details such as
 ECHO STARTED: Subdividing AgisoftExport with Blender
 %blender% -b -P blender.py
 ECHO DONE:    Final model produced as final.obj
+REM -------------------Export---------------------
+REM Copy LQ and HQ models out of folder
+COPY ..\data\agisoftExport.obj ..\%FolderName%_LQ.obj
+COPY ..\data\final.obj ..\%FolderName%_HQ.obj
+REM Zip (quickly) the whole project and rename it back to original name
+ECHO STARDED: Compressing project folder
+%SevenZip% a -tzip ..\%FolderName%.zip ../data/* -mx1
+REN ..\data %FolderName%
+ECHO DONE:    Project folder compressed
