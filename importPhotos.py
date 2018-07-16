@@ -12,6 +12,15 @@ from argparse import ArgumentParser
 from progress.bar import Bar
 from shutil import copy2
 
+# Define the sequence of expressions for the folder to be named respectively
+EXPRESSIONS = [
+    'disgusted',
+    'angry',
+    'happy',
+    'sad',
+    'plain'
+]
+
 def print_card_info(i):
     '''
     Prints prompt for new card 
@@ -63,10 +72,10 @@ def gen_folder_names():
     Generate new folders for the shooting
     and return their directories as list
     '''
-    folders = [args.name]
 
-    for i in range(2, int(args.shootings) + 1):
-        folders.append(args.name + "_" + str(i))
+    folders = []
+    for i in range(int(args.shootings)):
+        folders.append(args.name + "_" + EXPRESSIONS[i])
 
     base_dir = "..\\"
     folder_dirs = [os.path.join(base_dir, folder)
