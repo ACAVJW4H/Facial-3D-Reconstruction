@@ -80,8 +80,6 @@ def calculateMixedNormals():
 
 def calculateDiffuseNormals(card):
 
-    images = []
-
     prefix = "../data/card{}/".format(card)
 
     if CAM_NUM==9:
@@ -92,10 +90,10 @@ def calculateDiffuseNormals(card):
         names = [prefix + str(name) + ".TIF" for name in range(3, 16, 2)]
         names.remove(prefix + "11.TIF")
 
+    images = []
     for i in names:
-        img = Image.open(i)
-        arr = array(img)
-        images.append(arr.astype('float64'))
+        with Image.open(i) as img:
+            images.append(array(img).astype('float64'))
     
     height, width, _ = images[0].shape
 
@@ -103,11 +101,17 @@ def calculateDiffuseNormals(card):
     N_y = (images[2] - images[3]) / 255
     N_z = (images[4] - images[5]) / 255
 
+    del(images)
+
     encodedImage = np.empty_like(N_x).astype('float64')
 
     encodedImage[..., 0] = N_x[..., 0]
     encodedImage[..., 1] = N_y[..., 0]
     encodedImage[..., 2] = N_z[..., 0]
+
+    del(N_x)
+    del(N_y)
+    del(N_z)
 
     for h in range(height):
         normalize(encodedImage[h], copy=False)
@@ -185,8 +189,6 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
 
     correctedViewVector = unitVector(correctedViewVector)
 
-    images = []
-
     prefix = "../data/card{}/".format(card)
 
     xGradients = [prefix + str(name) + ".TIF" for name in range(3, 7)]
@@ -200,10 +202,10 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
 
     names = xGradients + yGradients + zGradients
 
+    images = []
     for i in names:
-        img = Image.open(i)
-        arr = array(img)
-        images.append(arr.astype('float64'))
+        with Image.open(i) as img:
+            images.append(array(img).astype('float64'))
 
     height, width, _ = images[0].shape
 
@@ -225,11 +227,17 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
     N_y = (images[2] - images[3]) / 255
     N_z = (images[4] - images[5]) / 255
 
+    del(images)
+
     encodedImage = np.empty_like(N_x).astype('float64')
 
     encodedImage[..., 0] = N_x[..., 1]
     encodedImage[..., 1] = N_y[..., 1]
     encodedImage[..., 2] = N_z[..., 1]
+
+    del(N_x)
+    del(N_y)
+    del(N_z)
 
     for h in range(height):
         normalize(encodedImage[h], copy=False)
