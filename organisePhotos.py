@@ -30,6 +30,19 @@ else:
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
+def get_raw_photos(cardpath):
+    '''
+    Returns a list with the directories of raw photos in the card folder.
+    '''
+    allPhotos = os.listdir(cardpath)
+    rawPhotos = []
+    
+    for photo in allPhotos:
+        if ".CR2" in photo:
+            rawPhotos.append(photo)
+
+    return rawPhotos
+
 def new_name(dirPhotos, i):
     '''
     Find the number of the first capture in the sequence
@@ -47,15 +60,18 @@ def convert_photo_linear_gamma(cardpath):
     to be placed as card*/1-16.tif 
     and to be used for the specular and diffuse normal maps.
     '''
-    rawPhotos = [raw for raw in os.listdir(cardpath)]
+    rawPhotos = get_raw_photos(cardpath)
     # for every raw photo
     for i in range(0, 16):
         rawPath = os.path.join(cardpath, rawPhotos[i])
         rgbPath = os.path.join(cardpath, NAMES[i])
 
-        with rawpy.imread(rawPath) as raw:
-            rgb = raw.postprocess(gamma=(1,1), no_auto_bright=True, output_bps=8)
-        imageio.imsave(rgbPath, rgb)
+        if os.path.isfile(rgbPath):
+            print("Skipping " + rgbPath)
+        else:
+            with rawpy.imread(rawPath) as raw:
+                rgb = raw.postprocess(use_auto_wb=True, gamma=(1,1), no_auto_bright=True, output_bps=8)
+            imageio.imsave(rgbPath, rgb)
 
 def convert_photo_bright(card):
     '''
@@ -69,24 +85,32 @@ def convert_photo_bright(card):
     rawPath = os.path.join(cardpath, rawPhoto)
     rgbPath = os.path.join(PHOTOS, card+".tif")
 
-    with rawpy.imread(rawPath) as raw:
-        rgb = raw.postprocess(use_auto_wb=True, no_auto_bright=False, output_bps=8)
-    imageio.imsave(rgbPath, rgb)
+    if os.path.isfile(rgbPath):
+        print("Skipping " + rgbPath)
+    else:
+        with rawpy.imread(rawPath) as raw:
+            rgb = raw.postprocess(use_auto_wb=True, no_auto_bright=False, output_bps=8)
+        imageio.imsave(rgbPath, rgb)
 
 def rename_photos(cardpath):
     '''
     Rename raw photos in a card folder
     to 1-16.CR2, according their place in the shooting sequence.
     '''
-    dirPhotos = os.listdir(cardpath)
+    rawPhotos = get_raw_photos(cardpath)
     for i in range(0, 16):
 
-        new_image = new_name(dirPhotos, i)
+        if "IMG" in rawPhotos[i]:
+            new_image = new_name(rawPhotos, i)
 
-        old_name_dir = os.path.join(cardpath, dirPhotos[i])
-        new_name_dir = os.path.join(cardpath, new_image)
+            old_name_dir = os.path.join(cardpath, rawPhotos[i])
+            new_name_dir = os.path.join(cardpath, new_image)
 
-        os.rename(old_name_dir, new_name_dir)
+            os.rename(old_name_dir, new_name_dir)
+
+        else:
+            print("Skipping Renaming in " + cardpath)
+            
 
 def organise_raw_photos():
     '''
