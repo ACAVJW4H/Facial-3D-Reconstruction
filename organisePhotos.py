@@ -2,6 +2,7 @@
 
 import os
 from shutil import copyfile
+import numpy as np
 import rawpy
 import imageio
 from PIL import Image
@@ -18,6 +19,11 @@ PHOTOS = "../data"
 CARDS = ["card{}".format(i) for i in range(1, CAM_NUM+1)]
 NAMES  = ["{}.tif".format(i) for i in range(1, 17)]
 
+# Set variables of color correction, to catch the white block
+STARTHEIGHT = 2676 # Upper left pixel
+STARTWIDTH  = 2205 # Upper left pixel
+DISTANCE    = 130  # Travel (pixels) to lower right pixel
+
 if CAM_NUM==9:
     STEREO_INPUT = 15
 elif CAM_NUM==10:
@@ -30,6 +36,58 @@ else:
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
+def save_np_image(im, name):
+    '''
+    Saves an input np.array type image as a uint8.
+    '''
+    im = Image.fromarray(im.astype('uint8'))
+    im.save(name)
+
+def get_white_balance_correction_values(startHeight = STARTHEIGHT, startWidth = STARTWIDTH, distance = DISTANCE):
+    '''
+    Use the white box in the cross-pollarized fully iluminated capture
+    to find an average correction measure for automatic white balance.
+    @author Mingqian
+    '''
+    colorChart = np.array(Image.open("../dataColors/card4/15.tif")).astype("float64")
+    sum = np.array([0.,0.,0.])
+    test = colorChart[startHeight : startHeight+distance, startWidth : startWidth + distance, ...]
+    save_np_image(test, "../test.tif")
+    #average value of a 200x200 patch
+    for h in range(startHeight, startHeight + distance):
+        for w in range(startWidth, startWidth + distance):
+            sum[0] += colorChart[h,w,0]
+            sum[1] += colorChart[h,w,1]
+            sum[2] += colorChart[h,w,2]
+    sum = sum / (float(distance) * float(distance) * 255.)
+
+    print(sum)
+
+# 0.90^3 is the greish white as appears on the camera with correct white balance
+# The other three values come from get_white_balance_correction_values().
+# Replace when needed.
+RED_CORRECTION = 0.9 / 0.6034721
+GREEN_CORRECTION = 0.9 / 0.35829795
+BLUE_CORRECTION = 0.9 / 0.32775194
+
+def get_white_balance_image(im, kR = RED_CORRECTION, kG = GREEN_CORRECTION, kB = BLUE_CORRECTION):
+    '''
+    For an image input as a numpy array,
+    it corrects the white balance according the correction values found by get_white_balance_correction_values()
+    @author Mingqian
+    '''
+    balancedR = kR * im[...,0]
+    balancedG = kG * im[...,1]
+    balancedB = kB * im[...,2]
+
+    balancedIm = np.empty_like(im).astype("float64")
+
+    balancedIm[...,0] = balancedR
+    balancedIm[...,1] = balancedG
+    balancedIm[...,2] = balancedB
+
+    return np.clip(balancedIm,0,255)
+
 def get_raw_photos(cardpath):
     '''
     Returns a list with the directories of raw photos in the card folder.
@@ -41,7 +99,7 @@ def get_raw_photos(cardpath):
         if ".CR2" in photo:
             rawPhotos.append(photo)
 
-    return rawPhotos
+    return sorted(rawPhotos)
 
 def new_name(dirPhotos, i):
     '''
@@ -54,6 +112,7 @@ def new_name(dirPhotos, i):
     
     return str(new-base+1)+".CR2"
 
+
 def convert_photo_linear_gamma(cardpath):
     '''
     Convert photos with linear gamma
@@ -61,6 +120,7 @@ def convert_photo_linear_gamma(cardpath):
     and to be used for the specular and diffuse normal maps.
     '''
     rawPhotos = get_raw_photos(cardpath)
+
     # for every raw photo
     for i in range(0, 16):
         rawPath = os.path.join(cardpath, rawPhotos[i])
@@ -69,9 +129,16 @@ def convert_photo_linear_gamma(cardpath):
         if os.path.isfile(rgbPath):
             print("Skipping " + rgbPath)
         else:
+            # Convert Image to tif with linear gamma
             with rawpy.imread(rawPath) as raw:
-                rgb = raw.postprocess(use_auto_wb=True, gamma=(1,1), no_auto_bright=True, output_bps=8)
+                rgb = raw.postprocess(use_auto_wb=False, gamma=(1,1), no_auto_bright=True, output_bps=8)
             imageio.imsave(rgbPath, rgb)
+
+            # Correct white balance
+            with Image.open(rgbPath) as inputImage:
+                unbalancedImage = np.array(inputImage).astype("float64")
+            balancedImage = get_white_balance_image(unbalancedImage)
+            save_np_image(balancedImage, rgbPath)
 
 def convert_photo_bright(card):
     '''
@@ -79,8 +146,8 @@ def convert_photo_bright(card):
     to be placed as card1-9.tif
     and to be used for the specular and diffuse normal maps.
     '''
-    rawPhoto = str(STEREO_INPUT) + ".CR2"
     cardpath = os.path.join(PHOTOS, card)
+    rawPhoto = get_raw_photos(cardpath)[STEREO_INPUT-1]
 
     rawPath = os.path.join(cardpath, rawPhoto)
     rgbPath = os.path.join(PHOTOS, card+".tif")
@@ -88,9 +155,25 @@ def convert_photo_bright(card):
     if os.path.isfile(rgbPath):
         print("Skipping " + rgbPath)
     else:
+        # Convert Image to tif without linear gamma
         with rawpy.imread(rawPath) as raw:
-            rgb = raw.postprocess(use_auto_wb=True, no_auto_bright=False, output_bps=8)
+            rgb = raw.postprocess(use_auto_wb=False, no_auto_bright=True, output_bps=8)
         imageio.imsave(rgbPath, rgb)
+
+        with Image.open(rgbPath) as inputImage:
+            unbalancedImage = np.array(inputImage).astype("float64")
+        balancedImage = get_white_balance_image(unbalancedImage)
+        save_np_image(balancedImage, rgbPath)
+
+def whiteBalanceImage(im,RED_CORRECTION,GREEN_CORRECTION,BLUE_CORRECTION):
+    balancedR = RED_CORRECTION * im[...,0]
+    balancedG = GREEN_CORRECTION * im[...,1]
+    balancedB = BLUE_CORRECTION * im[...,2]
+    balancedIm = np.empty_like(im).astype("float64")
+    balancedIm[...,0] = balancedR
+    balancedIm[...,1] = balancedG
+    balancedIm[...,2] = balancedB
+    return np.clip(balancedIm,0,255)
 
 def rename_photos(cardpath):
     '''
@@ -98,6 +181,7 @@ def rename_photos(cardpath):
     to 1-16.CR2, according their place in the shooting sequence.
     '''
     rawPhotos = get_raw_photos(cardpath)
+
     for i in range(0, 16):
 
         if "IMG" in rawPhotos[i]:
@@ -124,7 +208,7 @@ def organise_raw_photos():
         cardpath = os.path.join(PHOTOS,card)
 
         # rename
-        rename_photos(cardpath)
+        # rename_photos(cardpath)
 
         # convert and organise photos for maps
         convert_photo_linear_gamma(cardpath)
@@ -135,14 +219,6 @@ def organise_raw_photos():
         bar.next()
     bar.finish()
 
-organise_raw_photos()
-# print("Press any key to delete raw. Press 'n' or Ctrl+C to cancel.")
-# inp = raw_input()
+# get_white_balance_correction_values()
 
-# # remove raw
-# if (inp == "n"): exit()
-# for card in CARDS:
-#     for image in os.listdir(cardpath):
-#         if "CR2" in image:
-#             os.remove(os.path.join(cardpath, image))
-#     print("Raw {} deleted.".format(card))
+organise_raw_photos()
