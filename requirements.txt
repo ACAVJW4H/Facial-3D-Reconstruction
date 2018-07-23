@@ -6,7 +6,6 @@ backports-abc==0.5
 backports.functools-lru-cache==1.5
 backports.shutil-get-terminal-size==1.0.0
 bleach==2.1.1
-certifi==2017.7.27.1
 configparser==3.5.0
 cycler==0.10.0
 cython
@@ -20,6 +19,7 @@ futures==3.2.0
 gitdb2==2.0.3
 GitPython==2.1.8
 html5lib==1.0b10
+imageio
 ipykernel==4.6.1
 ipython==5.5.0
 ipython-genutils==0.2.0
