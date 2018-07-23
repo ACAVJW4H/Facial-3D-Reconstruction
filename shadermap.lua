@@ -36,10 +36,10 @@
 
 
 	-- TODO Batch variables
-	source_directory	= "C:\\Users\\aglat\\lightstage\\data\\"
-	save_directory		= "C:\\Users\\aglat\\lightstage\\data\\"
+	source_directory	= "D:\\LS_dataset\\data\\"
+	save_directory		= "D:\\LS_dataset\\data\\"
 	node_0_src_array	= {"blenderTexture.png"}
-	node_1_save_array	= {"result.png"}
+	node_1_save_array	= {"result"}
 	loop_count			= # node_0_src_array
 	batch_index			= 1 -- Lua uses 1 based indices
 
