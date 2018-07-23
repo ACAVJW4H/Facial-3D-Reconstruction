@@ -7,6 +7,7 @@ import os
 import win32api
 import random
 import string
+import subprocess
 
 from argparse import ArgumentParser
 from progress.bar import Bar
@@ -16,8 +17,8 @@ from shutil import copy2
 EXPRESSIONS = [
     'disgusted',
     'angry',
-    'happy',
     'sad',
+    'happy',
     'plain'
 ]
 
@@ -45,7 +46,7 @@ def get_card_name():
     Gets the loaded card name and number, 
     to be used in the folder structed of the inputs.
     '''
-    cardname = win32api.GetVolumeInformation("E:\\")[0]
+    cardname = win32api.GetVolumeInformation("G:\\")[0]
     return cardname.lower()
 
 def get_photo_names():
@@ -54,17 +55,32 @@ def get_photo_names():
     by date last modified.
     The last should be the most recent.
     '''
-    photo_folders = os.listdir("E:\\DCIM")
+    photo_folders = os.listdir("G:\\DCIM")
     photos = []
     for folder in photo_folders:
 
-        folder_path = os.path.join("E:\\DCIM", folder)
-        photos_temp = os.listdir(folder_path)
+        if "CANON" in folder:
+            folder_path = os.path.join("G:\\DCIM", folder)
+            photos_temp = sorted(os.listdir(folder_path))
 
-        for photo in photos_temp:
-            if(".CR2" in photo):
-                photos.append(os.path.join(folder_path, photo))
-    
+            for photo in photos_temp:
+                if(".CR2" in photo):
+                    photos.append(os.path.join(folder_path, photo))
+
+            dirs = subprocess.Popen(["dir", folder_path], stdout=subprocess.PIPE)
+            out_dirs = dirs.stdout.read()
+
+            # Print last items windows see
+            print(out_dirs[-300:])
+
+    # Print last item python sees, to check for occasionally missing data
+    print(photos[-1].split("\\")[-1])
+
+    if (len(photos) > 1000):
+        print("---------------------------")
+        print("WARNING: CARD GETTING FULL!")
+        print("---------------------------")
+        
     return photos
 
 def gen_folder_names():
