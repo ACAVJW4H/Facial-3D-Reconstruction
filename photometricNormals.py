@@ -168,15 +168,22 @@ def get_rotation_matrix(i_v, unit=None):
 def calculateSpecularNormals(card): # card is just range(1, 10)
 
     if CAM_NUM==9:
-        # for 9 camera setting
-        viewVectors = getTranslationVectorPerCamera('blocksExchange.xml')
+        # # for 9 camera setting
+        # viewVectors = getTranslationVectorPerCamera('../data/blocksExchange.xml')
+        # viewVectors = valmap(lambda arr: arr[:3], viewVectors)
+        # facingCamera = viewVectors['card3']
+        # centralCamera = viewVectors['card4']
+        # angle = angleBetween(np.array(facingCamera), np.array(centralCamera))
+        # rotationMatrix = createYRotationMatric(-angle)
+        viewVectors = getTranslationVectorPerCamera('../data/blocksExchange.xml')
         viewVectors = valmap(lambda arr: arr[:3], viewVectors)
         camera3 = viewVectors['card4']
         angle = angleBetween(np.array(camera3), np.array([0.0, 0.0, -1.0]))
+        print(np.rad2deg(angle))
         rotationMatrix = createYRotationMatric(-angle)
     else:
         # for 10 camera setting
-        viewVectors = getTranslationVectorPerCamera('blocksExchange.xml')
+        viewVectors = getTranslationVectorPerCamera('../data/blocksExchange.xml')
         viewVectors = valmap(lambda arr: arr[:3], viewVectors)
         camera3 = viewVectors['card3']
         camera5 = viewVectors['card5']
@@ -223,11 +230,9 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
 
     height, width, _ = images[0].shape
 
-    N_x = (images[0] - images[1]) / 255
-    N_y = (images[2] - images[3]) / 255
-    N_z = (images[4] - images[5]) / 255
-
-    del(images)
+    N_x = (images[0] - images[1])# / 255
+    N_y = (images[2] - images[3])# / 255
+    N_z = (images[4] - images[5])# / 255
 
     encodedImage = np.empty_like(N_x).astype('float64')
 
@@ -235,16 +240,12 @@ def calculateSpecularNormals(card): # card is just range(1, 10)
     encodedImage[..., 1] = N_y[..., 1]
     encodedImage[..., 2] = N_z[..., 1]
 
-    del(N_x)
-    del(N_y)
-    del(N_z)
-
     for h in range(height):
         normalize(encodedImage[h], copy=False)
 
-    encodedImage[..., 0] = encodedImage[..., 0] + correctedViewVector[0]
-    encodedImage[..., 1] = encodedImage[..., 1] + correctedViewVector[1]
-    encodedImage[..., 2] = encodedImage[..., 2] + correctedViewVector[2]
+    encodedImage[..., 0] = encodedImage[..., 0]# + correctedViewVector[0]
+    encodedImage[..., 1] = encodedImage[..., 1]# + correctedViewVector[1]
+    encodedImage[..., 2] = encodedImage[..., 2] + 1.# + correctedViewVector[2]
 
     for h in range(height):
         normalize(encodedImage[h], copy=False)
@@ -405,6 +406,7 @@ def getCameraParameters(pathToBlockExchangeXML, pathToAgisoftXML):
         counter += 1
 
     focalmmPerPhoto = getFocalFromAgisoftXml(pathToAgisoftXML)
+    print(focalmmPerPhoto)
 
     cardParams = valmap(lambda photogroup: photogoupToCameraParameters[photogroup], cardToPhotoGroup)
 
