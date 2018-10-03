@@ -32,6 +32,16 @@ else:
     print("Only 9 and 10 cameras supported.")
     exit()
 
+RED_CORRECTION = 0.9 / 0.57508159
+GREEN_CORRECTION = 0.9 / 0.33863589
+BLUE_CORRECTION = 0.9 / 0.30628449
+# PHOTOS = "../comp_c_grad"
+
+# RED_CORRECTION = 0.9 / 0.68484205
+# GREEN_CORRECTION = 0.9 / 0.38325126
+# BLUE_CORRECTION = 0.9 / 0.11427009
+# PHOTOS = "../comp_c_bin/"
+
 # imageio throws multiple warnings that do not affect functionality
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
@@ -66,9 +76,6 @@ def get_white_balance_correction_values(startHeight = STARTHEIGHT, startWidth = 
 # 0.90^3 is the greish white as appears on the camera with correct white balance
 # The other three values come from get_white_balance_correction_values().
 # Replace when needed.
-RED_CORRECTION = 0.9 / 0.6034721
-GREEN_CORRECTION = 0.9 / 0.35829795
-BLUE_CORRECTION = 0.9 / 0.32775194
 
 def get_white_balance_image(im, kR = RED_CORRECTION, kG = GREEN_CORRECTION, kB = BLUE_CORRECTION):
     '''
@@ -76,6 +83,7 @@ def get_white_balance_image(im, kR = RED_CORRECTION, kG = GREEN_CORRECTION, kB =
     it corrects the white balance according the correction values found by get_white_balance_correction_values()
     @author Mingqian
     '''
+
     balancedR = kR * im[...,0]
     balancedG = kG * im[...,1]
     balancedB = kB * im[...,2]
@@ -122,7 +130,7 @@ def convert_photo_linear_gamma(cardpath):
     rawPhotos = get_raw_photos(cardpath)
 
     # for every raw photo
-    for i in range(0, 16):
+    for i in range(0, len(rawPhotos)):
         rawPath = os.path.join(cardpath, rawPhotos[i])
         rgbPath = os.path.join(cardpath, NAMES[i])
 
@@ -182,7 +190,7 @@ def rename_photos(cardpath):
     '''
     rawPhotos = get_raw_photos(cardpath)
 
-    for i in range(0, 16):
+    for i in range(0, len(rawPhotos)):
 
         if "IMG" in rawPhotos[i]:
             new_image = new_name(rawPhotos, i)
@@ -220,5 +228,4 @@ def organise_raw_photos():
     bar.finish()
 
 # get_white_balance_correction_values()
-
 organise_raw_photos()
