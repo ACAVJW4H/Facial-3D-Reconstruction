@@ -45,7 +45,11 @@ def createAndSaveModel():
         interpolation = PhotoScan.EnabledInterpolation, 
         face_count = PhotoScan.FaceCount.MediumFaceCount, 
         source = PhotoScan.DataSource.DenseCloudData)
-    chunk.smoothModel(4)
+    chunk.smoothModel(20)
+
+    # Attempt to fill small gaps that will be subdivided later with details
+    #chunk.models[0].closeHoles(50)
+    #model.closeHoles(50)
 
     # For meshlab project file
     chunk.exportCameras("{}bundler.out".format(path), PhotoScan.CamerasFormat.CamerasFormatBundler)
