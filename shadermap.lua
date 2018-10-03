@@ -36,10 +36,10 @@
 
 
 	-- TODO Batch variables
-	source_directory	= "D:\\LS_dataset\\data\\"
-	save_directory		= "D:\\LS_dataset\\data\\"
+	source_directory	= "F:\\LS_dataset\\data\\"
+	save_directory		= "F:\\LS_dataset\\data\\"
 	node_0_src_array	= {"blenderTexture.png"}
-	node_1_save_array	= {"result"}
+	node_1_save_array	= {"blenderTexture"}
 	loop_count			= # node_0_src_array
 	batch_index			= 1 -- Lua uses 1 based indices
 
@@ -63,7 +63,7 @@
 
 		-- Begin Node: Properties
 		function sma() sm_set_node_property_list(node_1, 0, 1) end
-		function sma() sm_set_node_property_slider(node_1, 1, 100) end
+		function sma() sm_set_node_property_slider(node_1, 1, 110) end
 		function sma() sm_set_node_property_slider(node_1, 2, 100) end
 		function sma() sm_set_node_property_checkbox(node_1, 3, 1) end
 		function sma() sm_set_node_property_checkbox(node_1, 4, 1) end
