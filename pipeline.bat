@@ -4,41 +4,45 @@ REM alexandros.lattas17@imperial.ac.uk
 REM Project on github.com/lattas/facial-3d-reconstruction
 REM Reconstructs a 3D model of a face using pictures of different illumination and angle, as taken by a light stage.
 REM Based on Mridul Kumar's MEng thesis project
-REM ------------------Name----------------------
-REM Rename the folder in the arguments to 
-SET FolderName=%1
-ECHO Reconstructing %FolderName%...
-REN ..\%FolderName% data
-REM --------------Convert Photos----------------
-python organisePhotos.py
 REM ------------------Paths---------------------
 REM Set Paths to external Applications
-SET Photoscan="C:\Program Files\Agisoft\PhotoScan Pro\photoscan.exe"
-SET Meshlab="..\meshlab\meshlabserver.exe"
+SET Photoscan="D:\software\agisoft\photoscan.exe"
+SET Meshlab="D:\software\meshlab2018\distrib\meshlabserver.exe"
 SET Blender="C:\Program Files\Blender Foundation\Blender\blender.exe"
 SET ShaderMap4="C:\Program Files\ShaderMap 4\bin\ShaderMap.exe"
 SET SevenZip="C:\Program Files\7-Zip\7z.exe"
 REM Begin
+REM ------------------Name----------------------
+REM Rename the folder in the arguments to 
+ECHO STARTED: Renaming Folder
+SET FolderName=%1
+ECHO Reconstructing %FolderName%...
+REN ..\%FolderName% data
+ECHO DONE:    Renamed Folder
+REM --------------Convert Photos----------------
+REM ECHO STARTED: Preprocessing photos
+python organisePhotos.py
+REM ECHO DONE: Photos converted to TIFF
 REM --------------Reconstruction----------------
 REM Reconstruct 3D Model with Photoscan Agisoft
 REM The fully illuminated, cross-pollarized photos should be in createModel.py's directory, names card{}.JPG
-ECHO STARTING: 3D model reconstruction with Agisoft Photoscan
+REM ECHO STARTING: 3D model reconstruction with Agisoft Photoscan
 %Photoscan% -r createModel.py
-ECHO DONE:     3D model reconstruction as agisoftExport.obj
-REM ------------------Normals-------------------
+REM ECHO DONE:     3D model reconstruction as agisoftExport.obj
+REM REM ------------------Normals-------------------
 REM Compute diffuse and specular Normal Maps
 REM Photos should be in ..\data\card{}\1-16.TIF
-ECHO STARTING: Computing diffuse and specular normal maps
+REM ECHO STARTING: Computing diffuse and specular normal maps
 python photometricNormals.py --maps
-ECHO DONE:     Diffuse and specular normal maps
+REM ECHO DONE:     Diffuse and specular normal maps
 REM ---------------diffuseProject---------------
 REM Compose Meshlab diffuse project,
 REM execute the blenderScript to create the texture map from the diffuse normals and
 REM connect their coordinates with the model.
-ECHO STARTING: Executing diffuseProject with meshlab
+REM ECHO STARTING: Executing diffuseProject with meshlab
 python photometricNormals.py --diffuseProj
 %Meshlab% -p ..\data\diffuseProject.mlp -i ..\data\agisoftExport.obj -s blenderScript.mlx -w ..\data\diffuseAdded.mlp
-ECHO DONE:     Meshlab diffuseProject 
+REM ECHO DONE:     Meshlab diffuseProject 
 REM --------------specularProject---------------
 REM Compose Meshlab specular project,
 REM execute the blenderScript to create the texture map from the specular normals and
@@ -47,7 +51,7 @@ ECHO STARTING: Executing specularProject with meshlab
 python photometricNormals.py --specularProj
 %Meshlab% -p ..\data\specularProject.mlp -i ..\data\agisoftExport_out.obj -s blenderScript.mlx -w ..\data\specularAdded.mlp
 MOVE blenderTexture.png ..\data\blenderTexture.png
-COPY ..\data\blenderTexture.png ..\data\blenderTextureBKP.png
+REM COPY ..\data\blenderTexture.png ..\data\blenderTextureBKP.png
 ECHO DONE:     Meshlab specularProject and blenderTexture
 REM --------------------Blur---------------------
 REM Apply Gaussian blur of radius 1
@@ -72,6 +76,6 @@ COPY ..\data\agisoftExport.obj ..\%FolderName%_LQ.obj
 COPY ..\data\final.obj ..\%FolderName%_HQ.obj
 REM Zip (quickly) the whole project and rename it back to original name
 ECHO STARDED: Compressing project folder
-%SevenZip% a -tzip ..\%FolderName%.zip ../data/* -mx1
 REN ..\data %FolderName%
+%SevenZip% a -tzip ..\%FolderName%.zip ../%FolderName%/* -mx1
 ECHO DONE:    Project folder compressed
