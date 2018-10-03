@@ -1,6 +1,6 @@
 '''
 Import photos from the Light Stage cameras,
-by loading each SD card and downloading a number of 16-photo shootings.
+by loading each SD card and downloading a number of photos_per_capture-photo shootings.
 '''
 
 import os
@@ -46,7 +46,7 @@ def get_card_name():
     Gets the loaded card name and number, 
     to be used in the folder structed of the inputs.
     '''
-    cardname = win32api.GetVolumeInformation("G:\\")[0]
+    cardname = win32api.GetVolumeInformation("K:\\")[0]
     return cardname.lower()
 
 def get_photo_names():
@@ -55,12 +55,12 @@ def get_photo_names():
     by date last modified.
     The last should be the most recent.
     '''
-    photo_folders = os.listdir("G:\\DCIM")
+    photo_folders = os.listdir("K:\\DCIM")
     photos = []
     for folder in photo_folders:
 
         if "CANON" in folder:
-            folder_path = os.path.join("G:\\DCIM", folder)
+            folder_path = os.path.join("K:\\DCIM", folder)
             photos_temp = sorted(os.listdir(folder_path))
 
             for photo in photos_temp:
@@ -78,7 +78,7 @@ def get_photo_names():
 
     if (len(photos) > 1000):
         print("---------------------------")
-        print("WARNING: CARD GETTING FULL!")
+        print("WARNINK: CARD GETTING FULL!")
         print("---------------------------")
         
     return photos
@@ -107,7 +107,7 @@ def make_transfer(card, folder_dir, photos):
     '''
     Make the transfer of one card and one shooting.
     '''
-    bar = Bar("Transfering from "+card, max=16)
+    bar = Bar("Transfering from "+card, max=int(args.photos_per_capture))
 
     folder_card = os.path.join(folder_dir, card)
     if not os.path.exists(folder_card):
@@ -125,9 +125,11 @@ def make_transfer(card, folder_dir, photos):
 parser = ArgumentParser()
 parser.add_argument("-s", "--shootings", default=1, help="number of shootings to be downloaded")
 parser.add_argument("-n", "--name", default=id_generator(), help="folder name for the shooting")
+parser.add_argument("-p", "--photos_per_capture", default=16, help="number of photos per shooting")
 args = parser.parse_args()
 
 # Run for 9 cards
+
 for i in range(9):
 
     print_card_info(i)
@@ -138,5 +140,7 @@ for i in range(9):
         make_transfer(
             card,
             folder_dirs[i],
-            photos[16 * i : 16 * (i + 1)]
+            photos[
+                args.photos_per_capture * i : args.photos_per_capture * (i + 1)
+            ]
         )
