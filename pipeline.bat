@@ -33,15 +33,15 @@ REM REM ------------------Normals-------------------
 REM Compute diffuse and specular Normal Maps
 REM Photos should be in ..\data\card{}\1-16.TIF
 REM ECHO STARTING: Computing diffuse and specular normal maps
-python photometricNormals.py --maps
+python photometricNormalsShort.py
 REM ECHO DONE:     Diffuse and specular normal maps
 REM ---------------diffuseProject---------------
 REM Compose Meshlab diffuse project,
 REM execute the blenderScript to create the texture map from the diffuse normals and
 REM connect their coordinates with the model.
 REM ECHO STARTING: Executing diffuseProject with meshlab
-python photometricNormals.py --diffuseProj
-%Meshlab% -p ..\data\diffuseProject.mlp -i ..\data\agisoftExport.obj -s blenderScript.mlx -w ..\data\diffuseAdded.mlp
+REM python photometricNormals.py --diffuseProj
+REM %Meshlab% -p ..\data\diffuseProject.mlp -i ..\data\agisoftExport.obj -s blenderScript.mlx -w ..\data\diffuseAdded.mlp
 REM ECHO DONE:     Meshlab diffuseProject 
 REM --------------specularProject---------------
 REM Compose Meshlab specular project,
@@ -49,7 +49,7 @@ REM execute the blenderScript to create the texture map from the specular normal
 REM connect their coordinates with the model.
 ECHO STARTING: Executing specularProject with meshlab
 python photometricNormals.py --specularProj
-%Meshlab% -p ..\data\specularProject.mlp -i ..\data\agisoftExport_out.obj -s blenderScript.mlx -w ..\data\specularAdded.mlp
+%Meshlab% -p ..\data\specularProject.mlp -i ..\data\agisoftExport.obj -s blenderScript.mlx -w ..\data\specularAdded.mlp
 MOVE blenderTexture.png ..\data\blenderTexture.png
 REM COPY ..\data\blenderTexture.png ..\data\blenderTextureBKP.png
 ECHO DONE:     Meshlab specularProject and blenderTexture
