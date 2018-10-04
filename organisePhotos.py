@@ -13,11 +13,12 @@ from progress.bar import Bar
 
 # Set number of cameras
 CAM_NUM = 9
+PHOTO_NUM = 10
 
 # Set other constants
 PHOTOS = "../data"
 CARDS = ["card{}".format(i) for i in range(1, CAM_NUM+1)]
-NAMES  = ["{}.tif".format(i) for i in range(1, 17)]
+NAMES  = ["{}.tif".format(i) for i in range(1, PHOTO_NUM+1)]
 
 # Set variables of color correction, to catch the white block
 STARTHEIGHT = 2676 # Upper left pixel
@@ -25,7 +26,7 @@ STARTWIDTH  = 2205 # Upper left pixel
 DISTANCE    = 130  # Travel (pixels) to lower right pixel
 
 if CAM_NUM==9:
-    STEREO_INPUT = 15
+    STEREO_INPUT = 9
 elif CAM_NUM==10:
     STEREO_INPUT = 11
 else:
@@ -112,7 +113,7 @@ def get_raw_photos(cardpath):
 def new_name(dirPhotos, i):
     '''
     Find the number of the first capture in the sequence
-    and renames the ith photo in the 1-16.CR2 order.
+    and renames the ith photo in the 1-10.CR2 order.
     '''
 
     base = int(dirPhotos[0].split(".")[0].split("_")[1])
@@ -124,7 +125,7 @@ def new_name(dirPhotos, i):
 def convert_photo_linear_gamma(cardpath):
     '''
     Convert photos with linear gamma
-    to be placed as card*/1-16.tif 
+    to be placed as card*/1-10.tif 
     and to be used for the specular and diffuse normal maps.
     '''
     rawPhotos = get_raw_photos(cardpath)
@@ -186,7 +187,7 @@ def whiteBalanceImage(im,RED_CORRECTION,GREEN_CORRECTION,BLUE_CORRECTION):
 def rename_photos(cardpath):
     '''
     Rename raw photos in a card folder
-    to 1-16.CR2, according their place in the shooting sequence.
+    to 1-10.CR2, according their place in the shooting sequence.
     '''
     rawPhotos = get_raw_photos(cardpath)
 
