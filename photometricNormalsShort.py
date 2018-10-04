@@ -286,14 +286,14 @@ def calculateNormals(card=4):
 
     specNormals = (specNormals + 1.0) / 2.0
     specNormals *= 255.0
-    mixedNormals = (mixedNormals + 1.0) / 2.0
-    mixedNormals *= 255.0
-    diffuseNormals = (diffuseNormals + 1.0) / 2.0
-    diffuseNormals *= 255.0
+    # mixedNormals = (mixedNormals + 1.0) / 2.0
+    # mixedNormals *= 255.0
+    # diffuseNormals = (diffuseNormals + 1.0) / 2.0
+    # diffuseNormals *= 255.0
 
     saveImage(specNormals,"specularNormals.tif")
-    saveImage(diffuseNormals,"diffuseNormals.tif")
-    saveImage(mixedNormals,"mixedNormals.tif")
+    # saveImage(diffuseNormals,"diffuseNormals.tif")
+    # saveImage(mixedNormals,"mixedNormals.tif")
 
 if __name__ == "__main__":
     
