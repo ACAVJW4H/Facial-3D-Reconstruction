@@ -282,7 +282,7 @@ def calculateNormals(card=4):
         
     alpha = computeAlpha(Full_cp, Full_pp)
     rVector = computeReflectionVector(mixedNormals, diffuseNormals, alpha)
-    specNormals = computeSpecularNormals(rVector)
+    # specNormals = computeSpecularNormals(rVector)
 
     specNormals = (specNormals + 1.0) / 2.0
     specNormals *= 255.0
@@ -291,7 +291,7 @@ def calculateNormals(card=4):
     # diffuseNormals = (diffuseNormals + 1.0) / 2.0
     # diffuseNormals *= 255.0
 
-    saveImage(specNormals,"specularNormals.tif")
+    saveImage(specNormals,"specularNormal{}.tif".format(card))
     # saveImage(diffuseNormals,"diffuseNormals.tif")
     # saveImage(mixedNormals,"mixedNormals.tif")
 
