@@ -18,7 +18,8 @@ from PIL import ImageFilter
 from numpy import linalg as LA
 from sklearn.preprocessing import normalize
 
-DATA_FOLDER = "."
+DATA_FOLDER = "../data/"
+CAM_NUM = 9
 
 def whiteBalanceImage(im,kR,kG,kB):
     balancedR = kR * im[...,0]
@@ -33,8 +34,6 @@ def whiteBalanceImage(im,kR,kG,kB):
 def saveImage(im, name):
     im = Image.fromarray(im.astype('uint8'))
     im.save(name)
-
-#compute specular albedo#############################################################################
 
 #c = max(r,g,b) - min(r,g,b)
 #compute c for each pixel
@@ -220,40 +219,41 @@ def rgb2suv(im_rgb):
 
 def calculateNormals(card=4):
    
-    # Import Photos
-    b_X = np.array(Image.open("X_linear.tif")).astype("float64")
-    b_rX = np.array(Image.open("RX_linear.tif")).astype("float64")
-    b_Y = np.array(Image.open("Y_linear.tif")).astype("float64")
-    b_rY = np.array(Image.open("RY_linear.tif")).astype("float64")
-    b_Z = np.array(Image.open("Z_linear.tif")).astype("float64")
-    b_rZ = np.array(Image.open("RZ_linear.tif")).astype("float64")
-    b_Full_cp = np.array(Image.open("FULL_cp_linear.tif")).astype("float64")
-    b_Full_pp = np.array(Image.open("FULL_pp_linear.tif")).astype("float64")
+    prefix = os.path.join(DATA_FOLDER, "card{}".format(card))
+    image_files = [
+        os.path.join(prefix, str(name) + ".tif") for name in range(3, 11)
+    ]
+
+    images = []
+    for image in image_files:
+        images.append(np.array(Image.open(image)).astype("float64"))
+    
+    X, rX, Y, rY, Z, rZ, Full_cp, Full_pp = images
 
     # Get UVs
-    X_suv = rgb2suv(b_X)
+    X_suv = rgb2suv(X)
     X_uv = np.sqrt(X_suv[...,1]**2 + X_suv[...,2]**2)
-    rX_suv = rgb2suv(b_rX)
+    rX_suv = rgb2suv(rX)
     rX_uv = np.sqrt(rX_suv[...,1]**2 + rX_suv[...,2]**2)
-    Y_suv = rgb2suv(b_Y)
+    Y_suv = rgb2suv(Y)
     Y_uv = np.sqrt(Y_suv[...,1]**2 + Y_suv[...,2]**2)
-    rY_suv = rgb2suv(b_rY)
+    rY_suv = rgb2suv(rY)
     rY_uv = np.sqrt(rY_suv[...,1]**2 + rY_suv[...,2]**2)
-    Z_suv = rgb2suv(b_Z)
+    Z_suv = rgb2suv(Z)
     Z_uv = np.sqrt(Z_suv[...,1]**2 + Z_suv[...,2]**2)
-    rZ_suv = rgb2suv(b_rZ)
+    rZ_suv = rgb2suv(rZ)
     rZ_uv = np.sqrt(rZ_suv[...,1]**2 + rZ_suv[...,2]**2)
 
     N_x = X_uv - rX_uv
     N_y = Y_uv - rY_uv
     N_z = Z_uv - rZ_uv
 
-    diffuseNormals = np.empty_like(b_X).astype("float64")
+    diffuseNormals = np.empty_like(X).astype("float64")
     diffuseNormals[..., 0] = N_x
     diffuseNormals[..., 1] = N_y
     diffuseNormals[..., 2] = N_z
 
-    height, width, _ = b_X.shape
+    height, width, _ = X.shape
     for h in range(height):
         normalize(diffuseNormals[h], copy=False)
     # =============================================================================
@@ -265,9 +265,9 @@ def calculateNormals(card=4):
     # 	normalize(diffuseNormalsBlured[h], copy=False)
     # =============================================================================
         
-    N_x = (b_X - b_rX) 
-    N_y = (b_Y - b_rY) 
-    N_z = (b_Z - b_rZ) 
+    N_x = (X - rX) 
+    N_y = (Y - rY) 
+    N_z = (Z - rZ) 
 
     mixedNormals = np.empty_like(N_x).astype("float64")
 
@@ -276,11 +276,11 @@ def calculateNormals(card=4):
     mixedNormals[..., 1] = N_y[..., 1]
     mixedNormals[..., 2] = N_z[..., 1]
 
-    height, width, _ = b_X.shape
+    height, width, _ = X.shape
     for h in range(height):
         normalize(mixedNormals[h], copy=False)
         
-    alpha = computeAlpha(b_Full_cp, b_Full_pp)
+    alpha = computeAlpha(Full_cp, Full_pp)
     rVector = computeReflectionVector(mixedNormals, diffuseNormals, alpha)
     specNormals = computeSpecularNormals(rVector)
 
@@ -295,4 +295,8 @@ def calculateNormals(card=4):
     saveImage(diffuseNormals,"diffuseNormals.tif")
     saveImage(mixedNormals,"mixedNormals.tif")
 
-calculateNormals()
+if __name__ == "__main__":
+    
+    for i in range (1, CAM_NUM+1):
+        calculateNormals(i)
+        print("Specular+Diffuse for card {} done".format(i))
