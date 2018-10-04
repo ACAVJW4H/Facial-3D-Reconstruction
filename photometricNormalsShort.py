@@ -7,6 +7,7 @@ Created on Mon Jul 23 13:13:50 2018
 """
 
 import rawpy
+import os
 import imageio
 import colorsys
 import math
@@ -17,32 +18,7 @@ from PIL import ImageFilter
 from numpy import linalg as LA
 from sklearn.preprocessing import normalize
 
-Images = ["X", "RX","Y","RY", "Z", "RZ", "FULL_cp", "FULL_pp"]
-#convert raw images to linear images and save them as tiff#############################################
-for im in Images:
-    with rawpy.imread(im + ".CR2") as raw:
-        rgb = raw.postprocess(gamma=(1,1), no_auto_bright=True, output_bps=8)
-    imageio.imsave(im + "_linear.tiff", rgb)
-    
-X = np.array(Image.open("X_linear.tiff")).astype("float64")
-rX = np.array(Image.open("RX_linear.tiff")).astype("float64")
-Y = np.array(Image.open("Y_linear.tiff")).astype("float64")
-rY = np.array(Image.open("RY_linear.tiff")).astype("float64")
-Z = np.array(Image.open("Z_linear.tiff")).astype("float64")
-rZ = np.array(Image.open("RZ_linear.tiff")).astype("float64")
-Full_cp = np.array(Image.open("FULL_cp_linear.tiff")).astype("float64")
-Full_pp = np.array(Image.open("FULL_pp_linear.tiff")).astype("float64")
-  
-#white balancing#######################################################################################      
-# =============================================================================
-# kR = 0.90 / 0.825793
-# kG = 0.90 / 0.486488
-# kB = 0.899 / 0.442338
-# =============================================================================
-
-kR = 0.90 / 0.5751
-kG = 0.90 / 0.3386
-kB = 0.899 / 0.3063
+DATA_FOLDER = "."
 
 def whiteBalanceImage(im,kR,kG,kB):
     balancedR = kR * im[...,0]
@@ -57,29 +33,6 @@ def whiteBalanceImage(im,kR,kG,kB):
 def saveImage(im, name):
     im = Image.fromarray(im.astype('uint8'))
     im.save(name)
-
-b_X = whiteBalanceImage(X, kR, kG, kB)
-saveImage(b_X,"b_X.tiff")
-b_rX = whiteBalanceImage(rX, kR, kG, kB)
-saveImage(b_rX,"b_rX.tiff")
-b_Y = whiteBalanceImage(Y, kR, kG, kB)
-saveImage(b_Y,"b_Y.tiff")
-b_rY = whiteBalanceImage(rY, kR, kG, kB)
-saveImage(b_rY,"b_rY.tiff")
-b_Z = whiteBalanceImage(Z, kR, kG, kB)
-saveImage(b_Z,"b_Z.tiff")
-b_rZ = whiteBalanceImage(rZ, kR, kG, kB)
-saveImage(b_rZ,"b_rZ.tiff")
-b_Full_cp = whiteBalanceImage(Full_cp, kR, kG, kB)
-saveImage(b_Full_cp,"b_Full_cp.tiff")
-b_Full_pp = whiteBalanceImage(Full_pp, kR, kG, kB)
-saveImage(b_Full_pp,"b_Full_pp.tiff")
-del X
-del rX
-del Y
-del rY
-del Z
-del rZ
 
 #compute specular albedo#############################################################################
 
@@ -160,7 +113,7 @@ def createDiffOnlyImage(grad, comp):
 
 # specAlbedo = computeSpecAlbedo(delta_X, delta_Y)
 # specAlbedo *= 255;
-# saveImage(specAlbedo, "specularAlbedo.tiff")
+# saveImage(specAlbedo, "specularAlbedo.tif")
 
 #compute diffuse albedo#############################################################################
 def computeDiffAlbedo(mixed, spec):
@@ -171,7 +124,7 @@ def computeDiffAlbedo(mixed, spec):
     return np.clip(diffAlbedo,0,255)
 # fullOn = np.clip(X_diffSpec + X_diffOnly,0,255)
 # diffAlbedo = computeDiffAlbedo(fullOn, specAlbedo)
-# saveImage(diffAlbedo, "diffuseAlbedo.tiff")
+# saveImage(diffAlbedo, "diffuseAlbedo.tif")
 
 
 #compute normals###########################################################################
@@ -253,84 +206,93 @@ def rgb2suv(im_rgb):
 
 	return im_suv
 
-X_suv = rgb2suv(b_X)
-X_uv = np.sqrt(X_suv[...,1]**2 + X_suv[...,2]**2)
-saveImage(X_uv,"X_uv.tiff")
-rX_suv = rgb2suv(b_rX)
-rX_uv = np.sqrt(rX_suv[...,1]**2 + rX_suv[...,2]**2)
-saveImage(rX_uv,"rX_uv.tiff")
-Y_suv = rgb2suv(b_Y)
-Y_uv = np.sqrt(Y_suv[...,1]**2 + Y_suv[...,2]**2)
-saveImage(Y_uv,"Y_uv.tiff")
-rY_suv = rgb2suv(b_rY)
-rY_uv = np.sqrt(rY_suv[...,1]**2 + rY_suv[...,2]**2)
-saveImage(rY_uv,"rY_uv.tiff")
-Z_suv = rgb2suv(b_Z)
-Z_uv = np.sqrt(Z_suv[...,1]**2 + Z_suv[...,2]**2)
-saveImage(Z_uv,"Z_uv.tiff")
-rZ_suv = rgb2suv(b_rZ)
-rZ_uv = np.sqrt(rZ_suv[...,1]**2 + rZ_suv[...,2]**2)
-saveImage(rZ_uv,"rZ_uv.tiff")
-
-N_x = X_uv - rX_uv
-N_y = Y_uv - rY_uv
-N_z = Z_uv - rZ_uv
-
-diffuseNormals = np.empty_like(b_X).astype("float64")
-diffuseNormals[..., 0] = N_x
-diffuseNormals[..., 1] = N_y
-diffuseNormals[..., 2] = N_z
-
-height, width, _ = b_X.shape
-for h in range(height):
-	normalize(diffuseNormals[h], copy=False)
-# =============================================================================
-# diffuseNormalsBlured = np.array(Image.open("blured.ppm")).astype("float64")
-# diffuseNormalsBlured /= 255.0
-# diffuseNormalsBlured *= 2.0
-# diffuseNormalsBlured -= 1
-# for h in range(height):
-# 	normalize(diffuseNormalsBlured[h], copy=False)
-# =============================================================================
-    
-N_x = (b_X - b_rX) 
-N_y = (b_Y - b_rY) 
-N_z = (b_Z - b_rZ) 
-
-mixedNormals = np.empty_like(N_x).astype("float64")
-
-#mixed normals using blue channel
-mixedNormals[..., 0] = N_x[..., 1]
-mixedNormals[..., 1] = N_y[..., 1]
-mixedNormals[..., 2] = N_z[..., 1]
-
-height, width, _ = b_X.shape
-for h in range(height):
-	normalize(mixedNormals[h], copy=False)
-    
-alpha = computeAlpha(b_Full_cp, b_Full_pp)
-rVector = computeReflectionVector(mixedNormals, diffuseNormals, alpha)
-specNormals = computeSpecularNormals(rVector)
-
-specNormals = (specNormals + 1.0) / 2.0
-specNormals *= 255.0
-mixedNormals = (mixedNormals + 1.0) / 2.0
-mixedNormals *= 255.0
-diffuseNormals = (diffuseNormals + 1.0) / 2.0
-diffuseNormals *= 255.0
-
-saveImage(specNormals,"specularNormals.tiff")
-saveImage(diffuseNormals,"diffuseNormals.tiff")
-saveImage(mixedNormals,"mixedNormals.tiff")
-
 #correct the specular normals 
 # =============================================================================
-# specNormals = Image.open("specularNormals.tiff")
+# specNormals = Image.open("specularNormals.tif")
 # specNormalsBlured = specNormals.filter(ImageFilter.GaussianBlur(30))
 # 
 # specNormals = np.array(specNormals).astype("float64")
 # sapecNormalsBlured = np.array(specNormalsBlured).astype("float64")
 # highpass = specNormals - specNormalsBlured
 # correctedSpecNormals = np.clip(diffuseNormals + highpass, 0, 255)
-# saveImage(correctedSpecNormals, "correctedSpecularNormals.tiff")
+# saveImage(correctedSpecNormals, "correctedSpecularNormals.tif")
 # =============================================================================
+
+def calculateNormals(card=4):
+   
+    # Import Photos
+    b_X = np.array(Image.open("X_linear.tif")).astype("float64")
+    b_rX = np.array(Image.open("RX_linear.tif")).astype("float64")
+    b_Y = np.array(Image.open("Y_linear.tif")).astype("float64")
+    b_rY = np.array(Image.open("RY_linear.tif")).astype("float64")
+    b_Z = np.array(Image.open("Z_linear.tif")).astype("float64")
+    b_rZ = np.array(Image.open("RZ_linear.tif")).astype("float64")
+    b_Full_cp = np.array(Image.open("FULL_cp_linear.tif")).astype("float64")
+    b_Full_pp = np.array(Image.open("FULL_pp_linear.tif")).astype("float64")
+
+    # Get UVs
+    X_suv = rgb2suv(b_X)
+    X_uv = np.sqrt(X_suv[...,1]**2 + X_suv[...,2]**2)
+    rX_suv = rgb2suv(b_rX)
+    rX_uv = np.sqrt(rX_suv[...,1]**2 + rX_suv[...,2]**2)
+    Y_suv = rgb2suv(b_Y)
+    Y_uv = np.sqrt(Y_suv[...,1]**2 + Y_suv[...,2]**2)
+    rY_suv = rgb2suv(b_rY)
+    rY_uv = np.sqrt(rY_suv[...,1]**2 + rY_suv[...,2]**2)
+    Z_suv = rgb2suv(b_Z)
+    Z_uv = np.sqrt(Z_suv[...,1]**2 + Z_suv[...,2]**2)
+    rZ_suv = rgb2suv(b_rZ)
+    rZ_uv = np.sqrt(rZ_suv[...,1]**2 + rZ_suv[...,2]**2)
+
+    N_x = X_uv - rX_uv
+    N_y = Y_uv - rY_uv
+    N_z = Z_uv - rZ_uv
+
+    diffuseNormals = np.empty_like(b_X).astype("float64")
+    diffuseNormals[..., 0] = N_x
+    diffuseNormals[..., 1] = N_y
+    diffuseNormals[..., 2] = N_z
+
+    height, width, _ = b_X.shape
+    for h in range(height):
+        normalize(diffuseNormals[h], copy=False)
+    # =============================================================================
+    # diffuseNormalsBlured = np.array(Image.open("blured.ppm")).astype("float64")
+    # diffuseNormalsBlured /= 255.0
+    # diffuseNormalsBlured *= 2.0
+    # diffuseNormalsBlured -= 1
+    # for h in range(height):
+    # 	normalize(diffuseNormalsBlured[h], copy=False)
+    # =============================================================================
+        
+    N_x = (b_X - b_rX) 
+    N_y = (b_Y - b_rY) 
+    N_z = (b_Z - b_rZ) 
+
+    mixedNormals = np.empty_like(N_x).astype("float64")
+
+    #mixed normals using blue channel
+    mixedNormals[..., 0] = N_x[..., 1]
+    mixedNormals[..., 1] = N_y[..., 1]
+    mixedNormals[..., 2] = N_z[..., 1]
+
+    height, width, _ = b_X.shape
+    for h in range(height):
+        normalize(mixedNormals[h], copy=False)
+        
+    alpha = computeAlpha(b_Full_cp, b_Full_pp)
+    rVector = computeReflectionVector(mixedNormals, diffuseNormals, alpha)
+    specNormals = computeSpecularNormals(rVector)
+
+    specNormals = (specNormals + 1.0) / 2.0
+    specNormals *= 255.0
+    mixedNormals = (mixedNormals + 1.0) / 2.0
+    mixedNormals *= 255.0
+    diffuseNormals = (diffuseNormals + 1.0) / 2.0
+    diffuseNormals *= 255.0
+
+    saveImage(specNormals,"specularNormals.tif")
+    saveImage(diffuseNormals,"diffuseNormals.tif")
+    saveImage(mixedNormals,"mixedNormals.tif")
+
+calculateNormals()
