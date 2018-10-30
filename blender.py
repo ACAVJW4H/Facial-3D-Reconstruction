@@ -25,6 +25,7 @@ def displaceGeomtry(pathToOBJ, pathForExport):
     bm.to_mesh(me)
     bm.free()
 
+    obj_object = bpy.context.selected_objects[0]
     tex = obj_object.active_material.active_texture
     dispMod = obj_object.modifiers.new("Displace", type='DISPLACE')
     dispMod.texture = tex

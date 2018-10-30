@@ -47,7 +47,7 @@ REM --------------specularProject---------------
 REM Compose Meshlab specular project,
 REM execute the blenderScript to create the texture map from the specular normals and
 REM connect their coordinates with the model.
-MOVE ..\data\agisoftExport_out.obj ..\data\agisoftExport_out.BACKUP.obj
+MOVE ..\data\agisoftExport_out.obj ..\data\agisoftExport_out.BACKUP2.obj
 COPY ..\data\%FolderName%_LQ.obj ..\data\agisoftExport_out.obj
 ECHO STARTING: Executing specularProject with meshlab
 python photometricNormals.py --specularProj
