@@ -1,4 +1,5 @@
 import bpy
+import bmesh
 
 def displaceGeomtry(pathToOBJ, pathForExport):
     scene = bpy.context.screen.scene
@@ -14,8 +15,15 @@ def displaceGeomtry(pathToOBJ, pathForExport):
         item.use_shadeless = True
 
     subd = obj_object.modifiers.new("subd", type='SUBSURF')
-    # # subd.levels = 2
+    subd.levels = 2
     bpy.ops.object.modifier_apply(modifier=subd.name)
+
+    me = obj_object.data
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bmesh.ops.triangulate(bm, faces=bm.faces[:], quad_method=0, ngon_method=0)
+    bm.to_mesh(me)
+    bm.free()
 
     tex = obj_object.active_material.active_texture
     dispMod = obj_object.modifiers.new("Displace", type='DISPLACE')
@@ -27,5 +35,5 @@ def displaceGeomtry(pathToOBJ, pathForExport):
     bpy.ops.export_scene.obj(filepath=pathForExport)
 
 if __name__ == "__main__":
-    displaceGeomtry("../data/agisoftExport_out.obj",
+    displaceGeomtry("../data/agisoftExport_out_out.obj",
     "../data/final.obj")
