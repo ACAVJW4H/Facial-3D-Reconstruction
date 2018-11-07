@@ -20,8 +20,11 @@ EXPRESSIONS_DEFAULT = [
     'happy',
     'sad',
     'angry',
-    'disgusted'
+    'disgusted',
+    'fear',
+    'surprised'
 ]
+EXPRESSIONS_DEFAULT = " ".join(EXPRESSIONS_DEFAULT)
 
 def print_card_info(i):
     '''
@@ -124,13 +127,15 @@ def make_transfer(card, folder_dir, photos):
 
 # Arguments
 parser = ArgumentParser()
-parser.add_argument("-s", "--shootings", default=1, help="number of shootings to be downloaded")
 parser.add_argument("-n", "--name", default=id_generator(), help="folder name for the shooting")
 parser.add_argument("-p", "--photos_per_capture", default=10, help="number of photos per shooting")
 parser.add_argument("-e", "--expression_names", default=EXPRESSIONS_DEFAULT, help="custom names for capture folders, using in single quotes")
+parser.add_argument("-s", "--shootings", default=None, help="number of shootings to be downloaded")
 args = parser.parse_args()
 
 EXPRESSIONS = list(reversed(args.expression_names.split(' ')))
+if args.shootings == None:
+    args.shootings = len(EXPRESSIONS)
 
 # Run for 9 cards
 
