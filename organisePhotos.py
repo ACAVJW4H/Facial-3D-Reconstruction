@@ -17,8 +17,12 @@ from argparse import ArgumentParser
 CAM_NUM = 9
 VALUES_DIR = "./white_balancing_values.pkl"
 
+parser = ArgumentParser()
+parser.add_argument("-d", "--dir", default="data", help="Photo dir")
+args = parser.parse_args()
+
 # Set other constants
-PHOTOS = "../data"
+PHOTOS = "../{}".format(args.dir)
 CARDS = ["card{}".format(i) for i in range(1, CAM_NUM+1)]
 NAMES  = ["{}.tif".format(i) for i in range(1, 11)]
 
