@@ -13,5 +13,9 @@ set RC="C:\Program Files\Capturing Reality\RealityCapture\RealityCapture.exe"
 
 REM --- Reconstruction ---
 %RC% -newScene -add %dataAbsDir%\imagelist.imagelist ^
-    -align -exportRegistration %settingsdir%\RegistrationExportSettings.xml %dataAbsDir%\bundler2.out ^
+    -align ^
+    -exportRegistration %settingsdir%\RegistrationExport.xml %dataAbsDir%\bundler.out ^
+    -setReconstructionRegionAuto -mvs ^
+    -exportModel "Model 1" %dataAbsDir%\RCExport.obj %settingsdir%\ModelExport.xml ^
+    -save %dataAbsDir%\RCProject.rcproj ^
 -quit
