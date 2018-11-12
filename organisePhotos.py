@@ -18,11 +18,15 @@ CAM_NUM = 9
 VALUES_DIR = "./white_balancing_values.pkl"
 
 parser = ArgumentParser()
-parser.add_argument("-d", "--dir", default="data", help="Photo dir")
+parser.add_argument("-o", "--operation", default="organise", help="if given, get white balance values for that capture")
+parser.add_argument("-x", "--x", help="Upper left X of white square")
+parser.add_argument("-y", "--y", help="Upper left Y of white square")
+parser.add_argument("-d", "--distance", default=100, help="Distance accross the white square")
+parser.add_argument("-p", "--photos", default="data", help="photos dir")
 args = parser.parse_args()
 
 # Set other constants
-PHOTOS = "../{}".format(args.dir)
+PHOTOS = "../{}".format(args.photos)
 CARDS = ["card{}".format(i) for i in range(1, CAM_NUM+1)]
 NAMES  = ["{}.tif".format(i) for i in range(1, 11)]
 
@@ -240,13 +244,6 @@ def organise_raw_photos():
     
         bar.next()
     bar.finish()
-
-parser = ArgumentParser()
-parser.add_argument("-o", "--operation", default="organise", help="if given, get white balance values for that capture")
-parser.add_argument("-x", "--x", help="Upper left X of white square")
-parser.add_argument("-y", "--y", help="Upper left Y of white square")
-parser.add_argument("-d", "--distance", default=100, help="Distance accross the white square")
-args = parser.parse_args()
 
 if args.operation == "organise":
     with open(VALUES_DIR, 'rb') as values_file:
