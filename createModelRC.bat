@@ -11,11 +11,15 @@ set settingsdir="F:\LS_dataset\facial-3d-reconstruction\RCSettings"
 REM set scriptDir = "F:\LS_dataset\facial-3d-reconstruction"
 set RC="C:\Program Files\Capturing Reality\RealityCapture\RealityCapture.exe"
 
+REM In Application Settings: (cant import them yet through code)
+REM Smoothing: Type:Strong, Weight:0.5, Iterations: 8
+
 REM --- Reconstruction ---
 %RC% -newScene -add %dataAbsDir%\imagelist.imagelist ^
     -align ^
     -exportRegistration %settingsdir%\RegistrationExport.xml %dataAbsDir%\bundler.out ^
-    -setReconstructionRegionAuto -mvs ^
-    -exportModel "Model 1" %dataAbsDir%\RCExport.obj %settingsdir%\ModelExport.xml ^
+    -setReconstructionRegionAuto -mvs -calculateVertexColors ^
+    -clean -simplify 300000 -smooth ^
+    -exportModel "Model 4" %dataAbsDir%\RCExport.obj %settingsdir%\ModelExport.xml ^
     -save %dataAbsDir%\RCProject.rcproj ^
 -quit
