@@ -26,6 +26,21 @@ EXPRESSIONS_DEFAULT = [
 ]
 EXPRESSIONS_DEFAULT = " ".join(EXPRESSIONS_DEFAULT)
 
+def get_next_id():
+    all_folds = os.listdir("../")
+    ids = []
+    for a in all_folds:
+        b = a.split("_")[0]
+        if b.isdigit():
+            try:
+                ids.append(int(b))
+            except:
+                pass
+    id = str(max(ids) + 1)
+    print("Using ID: {}".format(id))
+    return id
+            
+
 def print_card_info(i):
     '''
     Prints prompt for new card 
@@ -75,10 +90,10 @@ def get_photo_names():
             out_dirs = dirs.stdout.read()
 
             # Print last items windows see
-            print(out_dirs[-300:])
+            # print(out_dirs[-300:])
 
     # Print last item python sees, to check for occasionally missing data
-    print(photos[-1].split("\\")[-1])
+    # print(photos[-1].split("\\")[-1])
 
     if (len(photos) > 1000):
         print("---------------------------")
@@ -127,7 +142,7 @@ def make_transfer(card, folder_dir, photos):
 
 # Arguments
 parser = ArgumentParser()
-parser.add_argument("-n", "--name", default=id_generator(), help="folder name for the shooting")
+parser.add_argument("-n", "--name", default=get_next_id(), help="folder name for the shooting")
 parser.add_argument("-p", "--photos_per_capture", default=10, help="number of photos per shooting")
 parser.add_argument("-e", "--expression_names", default=EXPRESSIONS_DEFAULT, help="custom names for capture folders, using in single quotes")
 parser.add_argument("-s", "--shootings", default=None, help="number of shootings to be downloaded")
@@ -145,6 +160,7 @@ for i in range(9):
     card        = get_card_name()
     photos      = list(reversed(get_photo_names()))
     folder_dirs = gen_folder_names()
+    print("Transfering {} shootings from {}:".format(args.shootings, card))
     for i in range(int(args.shootings)):
         make_transfer(
             card,
