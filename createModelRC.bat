@@ -8,13 +8,16 @@ REM ------ Settings ------
 set dataRelativeDir=%1
 set dataAbsDir="F:\LS_dataset\%dataRelativeDir%"
 set settingsdir="F:\LS_dataset\facial-3d-reconstruction\RCSettings"
-REM set scriptDir = "F:\LS_dataset\facial-3d-reconstruction"
 set RC="C:\Program Files\Capturing Reality\RealityCapture\RealityCapture.exe"
+
+REM -exportXmp uses current settins, which are set to locked.
 
 REM --- Reconstruction ---
 %RC% -newScene -add %dataAbsDir%\imagelist.imagelist ^
     -align ^
     -exportRegistration %settingsdir%\RegistrationExport.xml %dataAbsDir%\bundler.out ^
+    -exportRegistrationUndistoredImages %settingsdir%\RegistrationExport.xml %dataAbsDir% ^
+    -exportXmp ^
     -setReconstructionRegion %settingsdir%\reconstructionRegionBig.rcbox ^
     -mvs -calculateVertexColors ^
     -set "smoothIterations=10" -set "smoothWeight=0.8" -set "mvsFltSmoothingStyle=0" -set "mvsFltSmoothingType=1" ^
@@ -22,3 +25,15 @@ REM --- Reconstruction ---
     -exportModel "Model 5" %dataAbsDir%\RCExport.obj %settingsdir%\ModelExport.xml ^
     -save %dataAbsDir%\RCProject.rcproj ^
 -quit
+
+
+REM --- Specs Registration ---
+DEL %dataAbsDir%\card*.tif
+COPY %dataAbsDir%\speca\card*.tif %dataAbsDir%\.
+
+%RC% -load %dataAbsDir%\RCProject.rcproj ^
+    -exportRegistrationUndistoredImages %settingsdir%\RegistrationExport.xml %dataAbsDir% ^
+-quit
+
+DEL %dataAbsDir%\card*.tif
+COPY %dataAbsDir%\ims\card*.tif %dataAbsDir%\.

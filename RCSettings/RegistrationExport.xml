@@ -4,11 +4,25 @@
   <entry key="MvsExportMoveY" value="0.0"/>
   <entry key="MvsExportMoveZ" value="0.0"/>
   <entry key="MvsExportScaleX" value="1.0"/>
+  <entry key="calexFolder" value="F:\LS_dataset\shiyaagain_plain1\"/>
+  <entry key="calexUndistortPixelFormat" value="0x1"/>
   <entry key="calexFileFormat" value="Bundler v0.3 (negative z)"/>
+  <entry key="calexUndistMaxPixels" value="0"/>
   <entry key="calexExportSettingsVisible" value="1"/>
   <entry key="MvsExportScaleY" value="1.0"/>
+  <entry key="calexRequiresEqualResolution" value="0x0"/>
   <entry key="calexHasDisabled" value="0x0"/>
+  <entry key="calexUndistFitMode" value="2"/>
+  <entry key="calexUndistortImageFormat" value="0x9"/>
+  <entry key="calexUndistResMode" value="2"/>
+  <entry key="calexRequiresUndistortPrincipal" value="0x1"/>
   <entry key="MvsExportScaleZ" value="1.0"/>
-  <entry key="calexHasUndistort" value="0x0"/>
+  <entry key="calexDownscale" value="0x1"/>
+  <entry key="calexUndistortNaming" value="1"/>
+  <entry key="calexHasUndistort" value="0x1"/>
   <entry key="MvsExportIsModelCoordinates" value="0"/>
+  <entry key="calexInputHasLayers" value="0"/>
+  <entry key="calexExportUndistoted" value="true"/>
+  <entry key="calexUndistCutOut" value="1.0"/>
+  <entry key="calexUndistBackColor" value="0"/>
 </Configuration>

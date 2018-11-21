@@ -1,0 +1,25 @@
+<Configuration id="{E377B69D-FB4B-4833-9CBE-FF747B7AF6D9}">
+  <entry key="sfmDistortionModel" value="Brown3"/>
+  <entry key="sfmMergeGeoreferencedComponents" value="false"/>
+  <entry key="sfmMergeComponenetsOnly" value="false"/>
+  <entry key="sfmPreselectorFeatures" value="10000"/>
+  <entry key="sfmImageDownscaleFactor" value="1"/>
+  <entry key="sfmMaxFeatureReprojectionError" value="2.0"/>
+  <entry key="sfmEnableCameraPrior" value="true"/>
+  <entry key="sfmCameraPrecisionX" value="0.0"/>
+  <entry key="sfmCameraPrecisionY" value="0.0"/>
+  <entry key="sfmCameraPrecisionZ" value="-100.0"/>
+  <entry key="sfmCameraOrientationPrecision" value="0.0"/>
+  <entry key="sfmImageDownscaleFactorDraftMode" value="2"/>
+  <entry key="sfmForceComponentRematch" value="false"/>
+  <entry key="sfmBackgroundDetectFeatures" value="false"/>
+  <entry key="sfmDetectorSensitivity" value="Medium"/>
+  <entry key="sfmMaxFeaturesPerMpx" value="10000"/>
+  <entry key="sfmMaxFeaturesPerImage" value="40000"/>
+  <entry key="sfmBackgroundDetectThreadPriority" value="Low"/>
+  <entry key="sfmImagesOverlap" value="Low"/>
+  <entry key="sfmImagesOverlapDraftMode" value="Medium"/>
+  <entry key="sfmFinalModelOptimizationDraftMode" value="false"/>
+  <entry key="sfmAutoReconRegionAfterAlignment" value="true"/>
+  <entry key="sfmEnableAutoSuggestions" value="true"/>
+</Configuration>
