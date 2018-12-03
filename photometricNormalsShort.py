@@ -17,8 +17,15 @@ from PIL import Image
 from PIL import ImageFilter
 from numpy import linalg as LA
 from sklearn.preprocessing import normalize
+from argparse import ArgumentParser
 
-DATA_FOLDER = "../data/"
+parser = ArgumentParser()
+parser.add_argument("-p", "--path", default="data", help="give a path for the photo folder")
+args = parser.parse_args()
+
+# Set other constants
+DATA_FOLDER = "../{}".format(args.path)
+
 CAM_NUM = 9
 
 def whiteBalanceImage(im,kR,kG,kB):
@@ -291,12 +298,22 @@ def calculateNormals(card=4):
     # diffuseNormals = (diffuseNormals + 1.0) / 2.0
     # diffuseNormals *= 255.0
 
-    saveImage(specNormals, os.path.join(DATA_FOLDER, "specularNormal{}.png".format(card)))
+    saveImage(specNormals, os.path.join(DATA_FOLDER, "speculars/card{}.tif".format(card)))
     # saveImage(diffuseNormals,"diffuseNormals.tif")
     # saveImage(mixedNormals,"mixedNormals.tif")
+
+def already_calc(card):
+    """
+    Check if a normal is already calculated and skip it.
+    """
+    return os.path.exists(os.path.join(DATA_FOLDER, "speculars/card{}.tif".format(card)))
+
 
 if __name__ == "__main__":
     
     for i in range (1, CAM_NUM+1):
-        calculateNormals(i)
-        print("Specular+Diffuse for card {} done".format(i))
+        if not already_calc(i):
+            calculateNormals(i)
+            print("Specular+Diffuse for card{} done".format(i))
+        else:
+            print("Skipping card{}. Already done.".format(i))

@@ -1,5 +1,11 @@
 import bpy
 import bmesh
+import sys
+
+argv = sys.argv[sys.argv.index("--") + 1:]
+
+# Set other constants
+data = "../{}".format(argv[0])
 
 def displaceGeomtry(pathToOBJ, pathForExport):
     scene = bpy.context.screen.scene
@@ -30,11 +36,11 @@ def displaceGeomtry(pathToOBJ, pathForExport):
     dispMod = obj_object.modifiers.new("Displace", type='DISPLACE')
     dispMod.texture = tex
     dispMod.texture_coords = "UV"
-    dispMod.strength = -0.002
+    dispMod.strength = 0.120
     bpy.ops.object.modifier_apply(modifier=dispMod.name)
 
     bpy.ops.export_scene.obj(filepath=pathForExport)
 
 if __name__ == "__main__":
-    displaceGeomtry("../data/agisoftExport_out_out.obj",
-    "../data/final.obj")
+    displaceGeomtry("{}/RCExport_out.obj".format(data),
+    "{}/final.obj".format(data))

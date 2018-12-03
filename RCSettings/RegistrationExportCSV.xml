@@ -1,0 +1,14 @@
+<Configuration id="{2D5793BC-A65D-4318-A1B9-A05044608385}">
+  <entry key="MvsExportIsGeoreferenced" value="0x0"/>
+  <entry key="MvsExportMoveX" value="0.0"/>
+  <entry key="MvsExportMoveY" value="0.0"/>
+  <entry key="MvsExportMoveZ" value="0.0"/>
+  <entry key="MvsExportScaleX" value="1.0"/>
+  <entry key="calexFileFormat" value="Internal/External camera parameters"/>
+  <entry key="calexExportSettingsVisible" value="1"/>
+  <entry key="MvsExportScaleY" value="1.0"/>
+  <entry key="calexHasDisabled" value="0x0"/>
+  <entry key="MvsExportScaleZ" value="1.0"/>
+  <entry key="calexHasUndistort" value="0x1"/>
+  <entry key="MvsExportIsModelCoordinates" value="0"/>
+</Configuration>

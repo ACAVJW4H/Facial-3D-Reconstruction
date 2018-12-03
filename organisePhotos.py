@@ -46,6 +46,22 @@ else:
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
+def prepare_imagelist():
+    '''
+    Imagelist file for Reality Capture.
+    '''
+    images = ["card{}.tif\n".format(i + 1) for i in range(CAM_NUM)]
+    images000 = ["0000{}.png\n".format(i) for i in range(CAM_NUM)]
+    imglistName = "rawimagelist.imagelist"
+    img000Name = "image000list.txt"
+    with open(os.path.join(PHOTOS,imglistName), "w") as imagelist:
+        imagelist.writelines(images)
+    with open(os.path.join(PHOTOS,img000Name), "w") as imagelist:
+        imagelist.writelines(images000)
+
+    print("imagelist prepared")
+
+
 def save_np_image(im, name):
     '''
     Saves an input np.array type image as a uint8.
@@ -176,7 +192,7 @@ def convert_photo_bright(card):
     rawPhoto = get_raw_photos(cardpath)[STEREO_INPUT-1]
 
     rawPath = os.path.join(cardpath, rawPhoto)
-    rgbPath = os.path.join(PHOTOS, card+".tif")
+    rgbPath = os.path.join(PHOTOS, os.path.join("captures/", card+".tif"))
 
     if os.path.isfile(rgbPath):
         print("Skipping " + rgbPath)
@@ -249,5 +265,6 @@ if args.operation == "organise":
     with open(VALUES_DIR, 'rb') as values_file:
         RED_CORRECTION, GREEN_CORRECTION, BLUE_CORRECTION = pickle.load(values_file)
     organise_raw_photos()
+    prepare_imagelist()
 else:
     get_white_balance_correction_values(args.operation, int(args.x), int(args.y), int(args.distance))
