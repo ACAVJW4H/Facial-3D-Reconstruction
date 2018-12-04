@@ -45,3 +45,12 @@ if %mode%=="specularRegistration" (
 
     MOVE %dataAbsDir%\capturesBKP\*.tif %dataAbsDir%\captures\.
 )
+
+if %mode%=="textureRegistration" (
+    MOVE %dataAbsDir%\00*.png %dataAbsDir%\speculars\.
+
+    %RC% -load %dataAbsDir%\RCProject.rcproj ^
+        -exportRegistrationUndistoredImages %settingsdir%\RegistrationExportOUT.xml %dataAbsDir% ^
+    -quit
+
+)

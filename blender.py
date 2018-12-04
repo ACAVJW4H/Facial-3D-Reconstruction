@@ -36,11 +36,11 @@ def displaceGeomtry(pathToOBJ, pathForExport):
     dispMod = obj_object.modifiers.new("Displace", type='DISPLACE')
     dispMod.texture = tex
     dispMod.texture_coords = "UV"
-    dispMod.strength = 0.120
+    dispMod.strength = -0.14
     bpy.ops.object.modifier_apply(modifier=dispMod.name)
 
     bpy.ops.export_scene.obj(filepath=pathForExport)
 
 if __name__ == "__main__":
-    displaceGeomtry("{}/RCExport_out.obj".format(data),
-    "{}/final.obj".format(data))
+    displaceGeomtry("{}/{}_LQ_out.obj".format(data, argv[0]),
+    "{}/{}_HQ.obj".format(data, argv[0]))

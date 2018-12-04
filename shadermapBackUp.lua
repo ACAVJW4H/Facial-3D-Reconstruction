@@ -63,7 +63,7 @@
 
 		-- Begin Node: Properties
 		function sma() sm_set_node_property_list(node_1, 0, 1) end
-		function sma() sm_set_node_property_slider(node_1, 1, 160) end
+		function sma() sm_set_node_property_slider(node_1, 1, 300) end
 		function sma() sm_set_node_property_slider(node_1, 2, 100) end
 		function sma() sm_set_node_property_checkbox(node_1, 3, 1) end
 		function sma() sm_set_node_property_checkbox(node_1, 4, 0) end

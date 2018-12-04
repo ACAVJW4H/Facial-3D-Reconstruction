@@ -10,7 +10,7 @@ args = parser.parse_args()
 # Set other constants
 data = "../{}".format(args.path)
 
-specular = Image.open("{}/blenderTexture.png".format(data))
-blurredSpecular = specular.filter(PIL.ImageFilter.GaussianBlur(radius=1))
+specular = Image.open("{}/{}_texture.png".format(data, args.path))
+blurredSpecular = specular.filter(PIL.ImageFilter.MedianFilter(9))
 
-blurredSpecular.save("{}/blenderTexture.png".format(data), "PNG")
+blurredSpecular.save("{}/{}_texture.png".format(data, args.path), "PNG")
