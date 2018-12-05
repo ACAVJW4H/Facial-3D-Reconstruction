@@ -103,7 +103,13 @@ def getCameraNames(image_list_dit):
     with open(image_list_dit, "r") as imagelistfile:
         imagelist = imagelistfile.readlines()
         imagelist = [image.strip("\n") for image in imagelist]
-    return imagelist
+
+    actual_reg_photos = os.listdir(DATA_DIR)
+    reg_images = []
+    for image in imagelist:
+        if image in actual_reg_photos:
+            reg_images.append(image)
+    return reg_images
 
 
 def getViewportPx(name):
