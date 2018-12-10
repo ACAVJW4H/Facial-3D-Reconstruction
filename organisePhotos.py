@@ -188,6 +188,8 @@ def convert_photo_bright(card):
     to be placed as card1-9.tif
     and to be used for the specular and diffuse normal maps.
     '''
+    if not os.path.isdir(os.path.join(PHOTOS, "captures")):
+        os.makedirs(os.path.join(PHOTOS, "captures"))
     cardpath = os.path.join(PHOTOS, card)
     rawPhoto = get_raw_photos(cardpath)[STEREO_INPUT-1]
 
